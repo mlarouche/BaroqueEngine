@@ -1,5 +1,5 @@
 --
--- vs2015.lua
+-- vs2017.lua
 -- Baseline support for Visual Studio 2017.
 --
 
