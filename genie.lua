@@ -18,6 +18,10 @@ function baroqueProject(name, projectKind)
     configuration "Retail"
         flags { "OptimizeSpeed" }
 
+    configuration "vs*"
+        buildoptions { "/permissive-" }
+        defines { "NOMINMAX", "WIN32_LEAN_AND_MEAN", "VC_EXTRALEAN" }
+
     configuration "*"
 end
 
@@ -92,6 +96,12 @@ solution "BaroqueEngine"
             "Core/**.cpp",
             "Core/**.h"
         }
+
+        configuration "not windows"
+            excludes {
+                "Core/Platforms/Win32/**.cpp",
+                "Core/Platforms/Win32/**.h"
+            }
 
     group "3rdparty"
 
