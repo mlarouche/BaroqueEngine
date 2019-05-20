@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 
-#include "Core/Allocators/MallocAllocator.h"
-#include "Core/Allocators/ObjectAllocator.h"
+#include "Core/Memory/MallocAllocator.h"
+#include "Core/Memory/ObjectAllocator.h"
 
 namespace
 {
@@ -42,7 +42,7 @@ TEST(ObjectAllocator, ShouldCallConstructorAndDestructorOfAType)
 	TestObject::ConstructorCount = 0;
 	TestObject::DestructorCount = 0;
 
-	Baroque::ObjectAllocator<TestObject, Baroque::MallocAllocator> objectAllocator;
+	Baroque::Memory::ObjectAllocator<TestObject, Baroque::Memory::MallocAllocator> objectAllocator;
 
 	TestObject* newObject = objectAllocator.Allocate();
 	objectAllocator.Deallocate(newObject);
@@ -53,7 +53,7 @@ TEST(ObjectAllocator, ShouldCallConstructorAndDestructorOfAType)
 
 TEST(ObjectAllocator, ShouldSupportConstructorWithParameters)
 {
-	Baroque::ObjectAllocator<ObjectWithParameters, Baroque::MallocAllocator> objectAllocator;
+	Baroque::Memory::ObjectAllocator<ObjectWithParameters, Baroque::Memory::MallocAllocator> objectAllocator;
 
 	ObjectWithParameters* newObject = objectAllocator.Allocate(42);
 	

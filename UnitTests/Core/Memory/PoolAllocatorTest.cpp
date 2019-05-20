@@ -1,9 +1,7 @@
 #include <gtest/gtest.h>
 
-#define BAROQUE_FOR_UNIT_TEST 1
-
-#include "Core/Allocators/PoolAllocator.h"
-#include "Core/Allocators/MallocAllocator.h"
+#include "Core/Memory/PoolAllocator.h"
+#include "Core/Memory/MallocAllocator.h"
 
 namespace
 {
@@ -21,7 +19,7 @@ namespace
 			Mallocator.Deallocate(ptr);
 		}
 
-		Baroque::MallocAllocator Mallocator;
+		Baroque::Memory::MallocAllocator Mallocator;
 
 		static std::size_t AllocateCount;
 		static std::size_t DellocateCount;
@@ -30,7 +28,7 @@ namespace
 	std::size_t TestAllocator::AllocateCount = 0;
 	std::size_t TestAllocator::DellocateCount = 0;
 
-	using TestPoolAllocator = Baroque::PoolAllocator<TestAllocator, 64, 32>;
+	using TestPoolAllocator = Baroque::Memory::PoolAllocator<TestAllocator, 64, 32>;
 }
 
 TEST(PoolAllocator, ShouldProperlyDeallocateMemoryBlock)

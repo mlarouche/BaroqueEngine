@@ -1,12 +1,17 @@
 #include <gtest/gtest.h>
 
-#include "Core/Allocators/FallbackAllocator.h"
-#include "Core/Allocators/StackAllocator.h"
-#include "Core/Allocators/MallocAllocator.h"
+#include "Core/Memory/FallbackAllocator.h"
+#include "Core/Memory/StackAllocator.h"
+#include "Core/Memory/MallocAllocator.h"
+
+namespace
+{
+	using TheFallbackAllocator = Baroque::Memory::FallbackAllocator<Baroque::Memory::StackAllocator<512>, Baroque::Memory::MallocAllocator>;
+}
 
 TEST(FallbackAllocator, ShouldAllocateUsingPrimaryAllocator)
 {
-	Baroque::FallbackAllocator<Baroque::StackAllocator<512>, Baroque::MallocAllocator> allocator;
+	TheFallbackAllocator allocator;
 
 	void* result = allocator.Allocate(256);
 
@@ -18,7 +23,7 @@ TEST(FallbackAllocator, ShouldAllocateUsingPrimaryAllocator)
 
 TEST(FallbackAllocator, ShouldAllocateUsingFallbackAllocator)
 {
-	Baroque::FallbackAllocator<Baroque::StackAllocator<512>, Baroque::MallocAllocator> allocator;
+	TheFallbackAllocator allocator;
 
 	void* result = allocator.Allocate(1024);
 
@@ -30,7 +35,7 @@ TEST(FallbackAllocator, ShouldAllocateUsingFallbackAllocator)
 
 TEST(FallbackAllocator, ShouldUseFallbackWhenPrimaryIsFull)
 {
-	Baroque::FallbackAllocator<Baroque::StackAllocator<512>, Baroque::MallocAllocator> allocator;
+	TheFallbackAllocator allocator;
 
 	void* firstAlloc = allocator.Allocate(256);
 	EXPECT_TRUE(firstAlloc != nullptr);
@@ -51,7 +56,7 @@ TEST(FallbackAllocator, ShouldUseFallbackWhenPrimaryIsFull)
 
 TEST(FallbackAllocator, ShouldFailWhenBothAllocatorsAreFull)
 {
-	Baroque::FallbackAllocator<Baroque::StackAllocator<128>, Baroque::StackAllocator<256>> allocator;
+	Baroque::Memory::FallbackAllocator<Baroque::Memory::StackAllocator<128>, Baroque::Memory::StackAllocator<256>> allocator;
 
 	EXPECT_TRUE(allocator.Allocate(1024) == nullptr);
 }

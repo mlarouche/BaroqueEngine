@@ -1,12 +1,17 @@
 #include <gtest/gtest.h>
 
-#include "Core/Allocators/SegregatorAllocator.h"
-#include "Core/Allocators/MallocAllocator.h"
-#include "Core/Allocators/StackAllocator.h"
+#include "Core/Memory/SegregatorAllocator.h"
+#include "Core/Memory/MallocAllocator.h"
+#include "Core/Memory/StackAllocator.h"
+
+namespace
+{
+	using TheSegregatorAllocator = Baroque::Memory::SegregatorAllocator<1024, Baroque::Memory::StackAllocator<1024>, Baroque::Memory::MallocAllocator>;
+}
 
 TEST(SegregatorAllocator, ShouldAllocateWithSmallAllocator)
 {
-	Baroque::SegregatorAllocator<1024, Baroque::StackAllocator<1024>, Baroque::MallocAllocator> allocator;
+	TheSegregatorAllocator allocator;
 
 	void* result = allocator.Allocate(128);
 
@@ -18,7 +23,7 @@ TEST(SegregatorAllocator, ShouldAllocateWithSmallAllocator)
 
 TEST(SegregatorAllocator, ShouldAllocateWithLargeAllocator)
 {
-	Baroque::SegregatorAllocator<1024, Baroque::StackAllocator<1024>, Baroque::MallocAllocator> allocator;
+	TheSegregatorAllocator allocator;
 
 	void* result = allocator.Allocate(2048);
 

@@ -1,15 +1,15 @@
 #if defined(BAROQUE_TRACE_MEMORY)
 #include <gtest/gtest.h>
 
-#include "Core/Allocators/TracingAllocator.h"
-#include "Core/Allocators/MallocAllocator.h"
+#include "Core/Memory/TracingAllocator.h"
+#include "Core/Memory/MallocAllocator.h"
 
 namespace
 {
-	using TheTracingAllocator = Baroque::TracingAllocator<Baroque::MallocAllocator>;
+	using TheTracingAllocator = Baroque::Memory::TracingAllocator<Baroque::Memory::MallocAllocator>;
 
-	Baroque::TraceMemoryCategory Debug_Category_UnitTests("UnitTests");
-	Baroque::TraceMemoryCategory Debug_Category_Test("CategoryTests");
+	Baroque::Memory::TraceMemoryCategory Debug_Category_UnitTests("UnitTests");
+	Baroque::Memory::TraceMemoryCategory CategoryTest("CategoryTests");
 }
 
 TEST(TracingAllocator, ShouldRegisterTheAllocation)
@@ -17,7 +17,7 @@ TEST(TracingAllocator, ShouldRegisterTheAllocation)
 	TheTracingAllocator allocator;
 	void* result = allocator.Allocate(128, Debug_Category_UnitTests, BAROQUE_SOURCE_LOCATION);
 
-	auto allocationInfo = Baroque::GetAllocationInfo(result);
+	auto allocationInfo = Baroque::Memory::GetAllocationInfo(result);
 
 	EXPECT_EQ(allocationInfo->Allocation, result);
 	EXPECT_EQ(allocationInfo->Size, 128u);
@@ -31,27 +31,27 @@ TEST(TracingAllocator, ShouldUnregisterTheAllocation)
 	TheTracingAllocator allocator;
 	void* result = allocator.Allocate(128, Debug_Category_UnitTests, BAROQUE_SOURCE_LOCATION);
 
-	EXPECT_TRUE(Baroque::GetAllocationInfo(result) != nullptr);
+	EXPECT_TRUE(Baroque::Memory::GetAllocationInfo(result) != nullptr);
 
 	allocator.Deallocate(result);
 
-	EXPECT_TRUE(Baroque::GetAllocationInfo(result) == nullptr);
+	EXPECT_TRUE(Baroque::Memory::GetAllocationInfo(result) == nullptr);
 }
 
 TEST(TracingAllocator, ShouldChangeTraceCategoryInfo)
 {
 	TheTracingAllocator allocator;
-	void* result = allocator.Allocate(128, Debug_Category_Test, BAROQUE_SOURCE_LOCATION);
+	void* result = allocator.Allocate(128, CategoryTest, BAROQUE_SOURCE_LOCATION);
 
-	auto categoryInfo = Baroque::GetTraceMemoryCategoryInfo(Debug_Category_Test);
+	auto categoryInfo = Baroque::Memory::GetTraceMemoryCategoryInfo(CategoryTest);
 
 	EXPECT_EQ(categoryInfo->AllocationCount, 1);
 	EXPECT_EQ(categoryInfo->DeallocationCount, 0);
-	EXPECT_EQ(categoryInfo->Category, &Debug_Category_Test);
+	EXPECT_EQ(categoryInfo->Category, &CategoryTest);
 
 	allocator.Deallocate(result);
 
-	categoryInfo = Baroque::GetTraceMemoryCategoryInfo(Debug_Category_Test);
+	categoryInfo = Baroque::Memory::GetTraceMemoryCategoryInfo(CategoryTest);
 
 	EXPECT_EQ(categoryInfo->DeallocationCount, 1);
 }
