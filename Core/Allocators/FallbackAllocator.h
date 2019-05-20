@@ -8,7 +8,7 @@ namespace Baroque
 	class FallbackAllocator : private Primary, private Fallback
 	{
 	public:
-		void* Allocate(std::size_t size)
+		void* Allocate(const std::size_t size)
 		{
 			void* result = Primary::Allocate(size);
 			if (!result)
@@ -33,7 +33,7 @@ namespace Baroque
 			}
 		}
 
-		bool Owns(void* ptr) const
+		bool Owns(const void* ptr) const
 		{
 			return Primary::Owns(ptr) || Fallback::Owns(ptr);
 		}

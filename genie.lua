@@ -8,15 +8,19 @@ function baroqueProject(name, projectKind)
 
     configuration "Debug"
         flags { "Symbols" }
+        defines { "BAROQUE_DEBUG", "BAROQUE_TRACE_MEMORY" }
 
     configuration "OptimizedDebug"
         flags { "Symbols", "OptimizeSpeed" }
+        defines { "BAROQUE_DEBUG", "BAROQUE_TRACE_MEMORY" }
 
     configuration "Profile"
         flags { "OptimizeSpeed" }
+        defines { "BAROQUE_PROFILE" }
 
     configuration "Retail"
         flags { "OptimizeSpeed" }
+        defines { "BAROQUE_RETAIL" }
 
     configuration "vs*"
         buildoptions { "/permissive-" }
@@ -66,6 +70,13 @@ end
 solution "BaroqueEngine"
     location "Projects"
 
+    configurations {
+        "Debug",
+        "OptimizedDebug",
+        "Profile",
+        "Retail"
+    }
+
     configuration "Debug"
         targetdir "bin/Debug"
 
@@ -77,13 +88,6 @@ solution "BaroqueEngine"
 
     configuration "Retail"
         targetdir "bin/Retail"
-
-    configurations {
-        "Debug",
-        "OptimizedDebug",
-        "Profile",
-        "Retail"
-    }
 
     platforms {
         "x64"

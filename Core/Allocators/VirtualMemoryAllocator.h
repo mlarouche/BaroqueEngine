@@ -4,7 +4,7 @@
 
 namespace Baroque
 {
-	class BAROQUE_CORE_API MallocAllocator
+	class BAROQUE_CORE_API VirtualMemoryAllocator
 	{
 	public:
 		void* Allocate(const std::size_t size);

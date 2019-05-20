@@ -7,14 +7,14 @@
 namespace Baroque
 {
 	template<std::size_t AllocSize>
-	class StackAllocator 
+	class StackAllocator
 	{
 	public:
 		StackAllocator()
-			: _top(_storage)
+		: _top(_storage)
 		{}
 
-		void* Allocate(std::size_t size)
+		void* Allocate(const std::size_t size)
 		{
 			if (size > AllocSize)
 			{
@@ -35,7 +35,7 @@ namespace Baroque
 		{
 		}
 
-		bool Owns(void* ptr) const
+		bool Owns(const void* ptr) const
 		{
 			return ptr >= _storage && ptr < (_storage + AllocSize);
 		}

@@ -8,7 +8,7 @@ namespace Baroque
 	class SegregatorAllocator : private SmallAllocator, private LargeAllocator
 	{
 	public:
-		void* Allocate(std::size_t size)
+		void* Allocate(const std::size_t size)
 		{
 			if (size <= Threshold)
 			{
@@ -35,7 +35,7 @@ namespace Baroque
 			}
 		}
 
-		bool Owns(void* ptr) const
+		bool Owns(const void* ptr) const
 		{
 			return SmallAllocator::Owns(ptr) || LargeAllocator::Owns(ptr);
 		}

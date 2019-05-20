@@ -4,7 +4,7 @@
 
 namespace Baroque
 {
-	void* MallocAllocator::Allocate(std::size_t size)
+	void* MallocAllocator::Allocate(const std::size_t size)
 	{
 		return std::malloc(size);
 	}
