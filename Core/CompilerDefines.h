@@ -14,15 +14,12 @@
 #if defined(BAROQUE_COMPILER_MSVC)
 #define BAROQUE_DLL_EXPORT __declspec(dllexport)
 #define BAROQUE_DLL_IMPORT __declspec(dllimport)
-#define BAROQUE_UNIQUE_COUNTER __COUNTER__
 #elif defined(BAROQUE_COMPILER_GCC) || defined(BAROQUE_COMPILER_CLANG)
 #define BAROQUE_DLL_EXPORT __attribute__ ((visibility("default")))
 #define BAROQUE_DLL_IMPORT __attribute__ ((visibility("default")))
-
 #else
 #define BAROQUE_DLL_EXPORT
 #define BAROQUE_DLL_IMPORT
-#define BAROQUE_UNIQUE_COUNTER __LINE__
 #endif
 
 // __COUNTER__ macro
