@@ -1,78 +1,213 @@
 #pragma once
 
 #include "Core/CoreDefines.h"
+#include <type_traits>
 
 namespace Baroque
 {
 	struct InPlaceType {};
 	inline constexpr InPlaceType InPlace{};
 
+	namespace Private
+	{
+		template<typename T, bool isTrivialDestructible>
+		class OptionalStorage
+		{
+		protected:
+			using ValueType = T;
+
+			OptionalStorage()
+			: _dummy('\0')
+			{
+			}
+
+			OptionalStorage(const ValueType& value)
+			: _isUsed(true)
+			, _value(value)
+			{}
+
+			OptionalStorage(ValueType&& value)
+			: _isUsed(true)
+			, _value(std::forward<T>(value))
+			{}
+
+			OptionalStorage(const OptionalStorage& copy)
+			: _isUsed(copy._isUsed)
+			{
+				if (_isUsed)
+				{
+					new (&_value) ValueType(copy._value);
+				}
+			}
+
+			OptionalStorage(OptionalStorage&& move)
+			: _isUsed(move._isUsed)
+			{
+				move._isUsed = false;
+
+				if (_isUsed)
+				{
+					new (&_value) ValueType(std::forward<ValueType>(move._value));
+				}
+			}
+
+			template<typename... Args>
+			OptionalStorage(InPlaceType, Args&& ... args)
+			: _isUsed(true)
+			{
+				new (&_value) ValueType(std::forward<Args>(args)...);
+			}
+
+			~OptionalStorage()
+			{
+				destroy();
+			}
+
+			void destroy()
+			{
+				if (_isUsed)
+				{
+					_value.~ValueType();
+				}
+			}
+
+		protected:
+			// mlarouche - The union is used to disable the automatic call to a
+			// complex type ctor/dtor. It allows defaut-constructed Optional of 
+			// a complex type to be near no-op.
+			union
+			{
+				std::uint8_t _dummy;
+				T _value;
+			};
+
+			bool _isUsed = false;
+		};
+
+		// Trivial case
+		template<typename T>
+		class OptionalStorage<T, true>
+		{
+		protected:
+			using ValueType = T;
+
+			OptionalStorage()
+			: _dummy('\0')
+			{
+			}
+
+			OptionalStorage(const ValueType& value)
+			: _isUsed(true)
+			, _value(value)
+			{}
+
+			OptionalStorage(ValueType&& value)
+			: _isUsed(true)
+			, _value(std::forward<T>(value))
+			{}
+
+			OptionalStorage(const OptionalStorage& copy)
+			: _isUsed(copy._isUsed)
+			{
+				if (_isUsed)
+				{
+					new (&_value) ValueType(copy._value);
+				}
+			}
+
+			OptionalStorage(OptionalStorage&& move)
+				: _isUsed(move._isUsed)
+			{
+				move._isUsed = false;
+
+				if (_isUsed)
+				{
+					new (&_value) ValueType(std::forward<ValueType>(move._value));
+				}
+			}
+
+			template<typename... Args>
+			OptionalStorage(InPlaceType, Args&& ... args)
+			: _isUsed(true)
+			{
+				new (&_value) ValueType(std::forward<Args>(args)...);
+			}
+
+			~OptionalStorage()
+			{
+			}
+
+			void destroy()
+			{
+			}
+
+		protected:
+			// mlarouche - The union is used to disable the automatic call to a
+			// complex type ctor/dtor. It allows defaut-constructed Optional of 
+			// a complex type to be near no-op.
+			union
+			{
+				std::uint8_t _dummy;
+				T _value;
+			};
+
+			bool _isUsed = false;
+		};
+	}
+
 	template<typename T>
-	class Optional
+	class Optional : private Private::OptionalStorage<T, std::is_trivially_destructible<T>::value>
 	{
 	public:
 		using ValueType = T;
+		using Base = Private::OptionalStorage<T, std::is_trivially_destructible<T>::value>;
 
 		Optional()
-		: _dummy('\0')
+		: Base()
+		{
+		}
+
+		Optional(const ValueType& value)
+		: Base(value)
 		{
 		}
 
 		Optional(ValueType&& value)
-		: _value(std::forward<ValueType>(value))
-		, _isUsed(true)
+		: Base(std::forward<ValueType>(value))
 		{
 		}
 
 		template<typename... Args>
 		Optional(InPlaceType, Args&& ... args)
-		: _isUsed(true)
+		: Base(InPlace, std::forward<Args>(args)...)
 		{
-			new (&_value) ValueType(std::forward<Args>(args)...);
 		}
 
 		Optional(const Optional& copy)
-		: _isUsed(copy._isUsed)
+		: Base(copy)
 		{
-			if (_isUsed)
-			{
-				new (&_value) ValueType(copy._value);
-			}
 		}
 
 		Optional(Optional&& move)
-		: _isUsed(move._isUsed)
+		: Base(std::forward<Base>(move))
 		{
-			move._isUsed = false;
-
-			if (_isUsed)
-			{
-				new (&_value) ValueType(std::forward<ValueType>(move._value));
-			}
 		}
 
 		~Optional()
 		{
-			if (_isUsed)
-			{
-				_value.~ValueType();
-			}
 		}
 
 		Optional& operator=(const Optional& copy)
 		{
 			if (this != &copy)
 			{
-				if (_isUsed)
-				{
-					_value.~ValueType();
-				}
+				this->destroy();
 
-				_isUsed = copy._isUsed;
+				this->_isUsed = copy._isUsed;
 
-				if (_isUsed)
+				if (this->_isUsed)
 				{
-					new (&_value) ValueType(copy._value);
+					new (&this->_value) ValueType(copy._value);
 				}
 			}
 
@@ -81,19 +216,36 @@ namespace Baroque
 
 		Optional& operator=(Optional&& move)
 		{
-			if (_isUsed)
-			{
-				_value.~ValueType();
-			}
+			this->destroy();
 
-			_isUsed = move._isUsed;
+			this->_isUsed = move._isUsed;
 
-			if (_isUsed)
+			if (this->_isUsed)
 			{
-				new (&_value) ValueType(std::forward<ValueType>(move._value));
+				new (&this->_value) ValueType(std::forward<ValueType>(move._value));
 			}
 
 			move._isUsed = false;
+
+			return *this;
+		}
+
+		Optional& operator=(const ValueType& value)
+		{
+			this->destroy();
+
+			new (&this->_value) ValueType(value);
+			this->_isUsed = true;
+
+			return *this;
+		}
+
+		Optional& operator=(ValueType&& value)
+		{
+			this->destroy();
+
+			new (&this->_value) ValueType(std::forward<ValueType>(value));
+			this->_isUsed = true;
 
 			return *this;
 		}
@@ -106,80 +258,45 @@ namespace Baroque
 
 		void Clear()
 		{
-			if (_isUsed)
-			{
-				_value.~ValueType();
-			}
+			this->destroy();
 
-			_isUsed = false;
+			this->_isUsed = false;
 		}
 
 		bool IsValid() const
 		{
-			return _isUsed;
+			return this->_isUsed;
 		}
 
 		template<typename... Args>
 		void Emplace(Args&&... args)
 		{
-			if (_isUsed)
-			{
-				_value.~ValueType();
-			}
+			this->destroy();
 
-			new (&_value) ValueType(std::forward<Args>(args)...);
+			new (&this->_value) ValueType(std::forward<Args>(args)...);
 
-			_isUsed = true;
+			this->_isUsed = true;
 		}
 
 		ValueType& Value()
 		{
-			return _value;
+			return this->_value;
 		}
 
 		const ValueType& Value() const
 		{
-			return _value;
+			return this->_value;
 		}
-
-		template<typename T>
-		friend bool operator==(const Optional<T>& left, const Optional<T>& right);
-
-		template<typename T>
-		friend bool operator!=(const Optional<T>& left, const Optional<T>& right);
-
-		template<typename T>
-		friend bool operator<(const Optional<T>& left, const Optional<T>& right);
-
-		template<typename T>
-		friend bool operator>(const Optional<T>& left, const Optional<T>& right);
-
-		template<typename T>
-		friend bool operator<=(const Optional<T>& left, const Optional<T>& right);
-
-		template<typename T>
-		friend bool operator>=(const Optional<T>& left, const Optional<T>& right);
-
-	private:
-		// mlarouche - The union is used to disable the automatic call to a
-		// complex type ctor/dtor. It allows defaut-constructed Optional of 
-		// a complex type to be near no-op.
-		union
-		{
-			std::uint8_t _dummy;
-			ValueType _value;
-		};
-		bool _isUsed = false;
 	};
 
 	template<typename T>
-	bool operator==(const Optional<T>& left, const Optional<T>& right)
+	inline bool operator==(const Optional<T>& left, const Optional<T>& right)
 	{
-		if (left._isUsed == right._isUsed)
+		if (left.IsValid() == right.IsValid())
 		{
-			if (left._isUsed)
+			if (left.IsValid())
 			{
-				return left._value == right._value;
+				return left.Value() == right.Value();
 			}
 
 			return true;
@@ -189,19 +306,19 @@ namespace Baroque
 	}
 
 	template<typename T>
-	bool operator!=(const Optional<T>& left, const Optional<T>& right)
+	inline bool operator!=(const Optional<T>& left, const Optional<T>& right)
 	{
 		return !operator==(left, right);
 	}
 
 	template<typename T>
-	bool operator<(const Optional<T>& left, const Optional<T>& right)
+	inline bool operator<(const Optional<T>& left, const Optional<T>& right)
 	{
-		if (left._isUsed == right._isUsed)
+		if (left.IsValid() == right.IsValid())
 		{
-			if (left._isUsed)
+			if (left.IsValid())
 			{
-				return left._value < right._value;
+				return left.Value() < right.Value();
 			}
 
 			return true;
@@ -211,13 +328,13 @@ namespace Baroque
 	}
 
 	template<typename T>
-	bool operator>(const Optional<T>& left, const Optional<T>& right)
+	inline bool operator>(const Optional<T>& left, const Optional<T>& right)
 	{
-		if (left._isUsed == right._isUsed)
+		if (left.IsValid() == right.IsValid())
 		{
-			if (left._isUsed)
+			if (left.IsValid())
 			{
-				return left._value > right._value;
+				return left.Value() > right.Value();
 			}
 
 			return true;
@@ -227,13 +344,13 @@ namespace Baroque
 	}
 
 	template<typename T>
-	bool operator<=(const Optional<T>& left, const Optional<T>& right)
+	inline bool operator<=(const Optional<T>& left, const Optional<T>& right)
 	{
-		if (left._isUsed == right._isUsed)
+		if (left.IsValid() == right.IsValid())
 		{
-			if (left._isUsed)
+			if (left.IsValid())
 			{
-				return left._value <= right._value;
+				return left.Value() <= right.Value();
 			}
 
 			return true;
@@ -243,13 +360,13 @@ namespace Baroque
 	}
 
 	template<typename T>
-	bool operator>=(const Optional<T>& left, const Optional<T>& right)
+	inline bool operator>=(const Optional<T>& left, const Optional<T>& right)
 	{
-		if (left._isUsed == right._isUsed)
+		if (left.IsValid() == right.IsValid())
 		{
-			if (left._isUsed)
+			if (left.IsValid())
 			{
-				return left._value >= right._value;
+				return left.Value() >= right.Value();
 			}
 
 			return true;

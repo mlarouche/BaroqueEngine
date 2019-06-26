@@ -235,6 +235,11 @@ TEST(Optional, CopyAssignmentOperatorShouldWorkWithSimpleType)
 
 	EXPECT_TRUE(first.IsValid());
 	EXPECT_EQ(first.Value(), 24);
+
+	second = 678;
+
+	EXPECT_TRUE(second.IsValid());
+	EXPECT_EQ(second.Value(), 678);
 }
 
 TEST(Optional, CopyAssignmentOperatorShouldWorkWithComplexType)
@@ -258,6 +263,38 @@ TEST(Optional, CopyAssignmentOperatorShouldWorkWithComplexType)
 	EXPECT_EQ(TestComplexType::CopyCtorCount, 1);
 	EXPECT_EQ(TestComplexType::MoveCtorCount, 0);
 	EXPECT_EQ(TestComplexType::DtorCount, 3);
+}
+
+TEST(Optional, DirectCopyAssignmentOperatorShouldWorkWithComplexType)
+{
+	TestComplexType::Reset();
+
+	{
+		Baroque::Optional<TestComplexType> optional{ Baroque::InPlace, 34 };
+		EXPECT_EQ(optional.Value().DummyValue, 34);
+
+		TestComplexType copy{ 567 };
+		optional = copy;
+
+		EXPECT_EQ(optional.Value().DummyValue, 567);
+	}
+
+	EXPECT_EQ(TestComplexType::CtorCount, 2);
+	EXPECT_EQ(TestComplexType::CopyCtorCount, 1);
+	EXPECT_EQ(TestComplexType::MoveCtorCount, 0);
+	EXPECT_EQ(TestComplexType::DtorCount, 3);
+}
+
+TEST(Optional, DirectCopyAssignmentOperatorShouldSetIsValid)
+{
+	Baroque::Optional<int> test;
+
+	EXPECT_FALSE(test.IsValid());
+
+	test = 456;
+
+	EXPECT_TRUE(test.IsValid());
+	EXPECT_EQ(test.Value(), 456);
 }
 
 TEST(Optional, CopyAssignANullValueShouldCallDestructorOfComplexType)
@@ -297,6 +334,48 @@ TEST(Optional, MoveAssignmentOperatorShouldWorkWithComplexType)
 
 		EXPECT_TRUE(first.IsValid());
 		EXPECT_EQ(first.Value().DummyValue, 90);
+	}
+
+	EXPECT_EQ(TestComplexType::CtorCount, 2);
+	EXPECT_EQ(TestComplexType::CopyCtorCount, 0);
+	EXPECT_EQ(TestComplexType::MoveCtorCount, 1);
+	EXPECT_EQ(TestComplexType::DtorCount, 2);
+}
+
+TEST(Optional, DirectMoveAssigmentShouldWorkWithComplexType)
+{
+	TestComplexType::Reset();
+
+	{
+		Baroque::Optional<TestComplexType> testMoveDirect;
+
+		EXPECT_FALSE(testMoveDirect.IsValid());
+
+		testMoveDirect = TestComplexType{ 987 };
+
+		EXPECT_TRUE(testMoveDirect.IsValid());
+		EXPECT_EQ(testMoveDirect.Value().DummyValue, 987);
+	}
+
+	EXPECT_EQ(TestComplexType::CtorCount, 1);
+	EXPECT_EQ(TestComplexType::CopyCtorCount, 0);
+	EXPECT_EQ(TestComplexType::MoveCtorCount, 1);
+	EXPECT_EQ(TestComplexType::DtorCount, 1);
+}
+
+TEST(Optional, DirectMoveAssigmentShouldCallTheDtorOfComplexType)
+{
+	TestComplexType::Reset();
+
+	{
+		Baroque::Optional<TestComplexType> testMoveDirect{ Baroque::InPlace, 123 };
+		EXPECT_TRUE(testMoveDirect.IsValid());
+		EXPECT_EQ(testMoveDirect.Value().DummyValue, 123);
+
+		testMoveDirect = TestComplexType{ 987 };
+
+		EXPECT_TRUE(testMoveDirect.IsValid());
+		EXPECT_EQ(testMoveDirect.Value().DummyValue, 987);
 	}
 
 	EXPECT_EQ(TestComplexType::CtorCount, 2);
