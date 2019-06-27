@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?> 
+<AutoVisualizer xmlns="http://schemas.microsoft.com/vstudio/debugger/natvis/2010"> 
+  <Type Name="Baroque::Optional&lt;*&gt;">
+    <DisplayString Condition="_isUsed == true">{_value}</DisplayString>
+    <DisplayString Condition="_isUsed == false">Null</DisplayString>
+    <Expand>
+      <ExpandedItem Condition="_isUsed == true">_value</ExpandedItem>
+    </Expand>
+  </Type>
+  <Type Name="Baroque::UniquePtr&lt;*,*&gt;">
+    <DisplayString Condition="_ptr == 0">Null</DisplayString>
+    <DisplayString>{_ptr}</DisplayString>
+    <Expand>
+      <ExpandedItem Condition="_ptr != 0">_ptr</ExpandedItem>
+    </Expand>
+  </Type>
+  <Type Name="Baroque::FixedArray&lt;*,*&gt;">
+    <DisplayString>{{ size={$T2} }}</DisplayString>
+    <Expand>
+      <Item Name="[size]" ExcludeView="simple">$T2</Item>
+      <ArrayItems>
+        <Size>$T2</Size>
+        <ValuePointer>_array</ValuePointer>
+      </ArrayItems>
+    </Expand>
+  </Type>
+  <Type Name="Baroque::ArrayView&lt;*&gt;">
+    <DisplayString>{{ size={_end - _begin} }}</DisplayString>
+    <Expand>
+      <Item Name="[size]" ExcludeView="simple">_end - _begin</Item>
+      <ArrayItems>
+        <Size>_end - _begin</Size>
+        <ValuePointer>_begin</ValuePointer>
+      </ArrayItems>
+    </Expand>
+  </Type>
+  <Type Name="Baroque::ArraySpan&lt;*&gt;">
+    <DisplayString>{{ size={_end - _begin} }}</DisplayString>
+    <Expand>
+      <Item Name="[size]" ExcludeView="simple">_end - _begin</Item>
+      <ArrayItems>
+        <Size>_end - _begin</Size>
+        <ValuePointer>_begin</ValuePointer>
+      </ArrayItems>
+    </Expand>
+  </Type>
+</AutoVisualizer>

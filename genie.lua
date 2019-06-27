@@ -98,7 +98,8 @@ solution "BaroqueEngine"
     baroqueStaticLib "Core"
         files {
             "Core/**.cpp",
-            "Core/**.h"
+            "Core/**.h",
+            "Core/BaroqueCore.natvis"
         }
 
         configuration "not windows"
