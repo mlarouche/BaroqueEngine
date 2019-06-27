@@ -10,6 +10,8 @@ struct TestComplexType
 	TestComplexType(const TestComplexType& copy);
 	TestComplexType(TestComplexType&& move);
 
+	TestComplexType& operator=(const TestComplexType& copy);
+
 	int DummyValue = 42;
 	bool DoDtor = true;
 
@@ -19,4 +21,5 @@ struct TestComplexType
 	static std::size_t CopyCtorCount;
 	static std::size_t MoveCtorCount;
 	static std::size_t DtorCount;
+	static std::size_t CopyAssignmentCount;
 };
