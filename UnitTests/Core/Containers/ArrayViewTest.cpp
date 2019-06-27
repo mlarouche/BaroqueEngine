@@ -39,8 +39,6 @@ TEST(ArrayView, DefaultArrayViewShouldHaveNullBeginAndEnd)
 {
 	Baroque::ArrayView<int> null;
 
-	std::string_view test;
-
 	EXPECT_EQ(null.begin(), nullptr);
 	EXPECT_EQ(null.end(), nullptr);
 }
