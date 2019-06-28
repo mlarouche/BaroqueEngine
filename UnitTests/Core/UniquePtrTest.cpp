@@ -59,7 +59,7 @@ TEST(UniquePtr, ShouldCallDestructorOfComplexType)
 	{
 		Baroque::UniquePtr<TestComplexType> complex = Baroque::MakeUnique<TestComplexType>(42);
 
-		EXPECT_EQ(complex->DummyValue, 42);
+		EXPECT_EQ(complex->Value, 42);
 	}
 
 	EXPECT_EQ(TestComplexType::CtorCount, 1);
@@ -142,7 +142,7 @@ TEST(UniquePtr, MoveAssignmentShouldWorkWithCustomDeleter)
 		EXPECT_TRUE(moved);
 		EXPECT_FALSE(original);
 
-		EXPECT_EQ(moved->DummyValue, 42);
+		EXPECT_EQ(moved->Value, 42);
 	}
 
 	EXPECT_EQ(TestCustomDeleterNoState::CustomDtor, 2);
@@ -154,7 +154,7 @@ TEST(UniquePtr, AssignmentWithNullPointerShouldCallDestructor)
 
 	{
 		Baroque::UniquePtr<TestComplexType, TestCustomDeleterNoState> valid(new TestComplexType{ 42 });
-		EXPECT_EQ(valid->DummyValue, 42);
+		EXPECT_EQ(valid->Value, 42);
 
 		valid = nullptr;
 

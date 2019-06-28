@@ -39,7 +39,7 @@ TEST(Optional, ShouldCallTypeCtorAndDtorAtCtorTime)
 	{
 		Baroque::Optional<TestComplexType> test{ TestComplexType{} };
 
-		EXPECT_EQ(test.Value().DummyValue, 42);
+		EXPECT_EQ(test.Value().Value, 42);
 	}
 
 	EXPECT_EQ(TestComplexType::CtorCount, 1);
@@ -55,7 +55,7 @@ TEST(Optional, ShouldBeAbleToDoImplaceCtor)
 	{
 		Baroque::Optional<TestComplexType> test{Baroque::InPlace, 128};
 
-		EXPECT_EQ(test.Value().DummyValue, 128);
+		EXPECT_EQ(test.Value().Value, 128);
 	}
 
 	EXPECT_EQ(TestComplexType::CtorCount, 1);
@@ -82,7 +82,7 @@ TEST(Optional, CopyConstructorShouldCallCopyCtorOfComplexType)
 		Baroque::Optional<TestComplexType> copy(valid);
 
 		EXPECT_TRUE(copy.IsValid());
-		EXPECT_EQ(copy.Value().DummyValue, 128);
+		EXPECT_EQ(copy.Value().Value, 128);
 	}
 
 	EXPECT_EQ(TestComplexType::CtorCount, 1);
@@ -99,7 +99,7 @@ TEST(Optional, MoveConstructorShouldOnlyCallDtorOnce)
 		Baroque::Optional<TestComplexType> valid(std::move(Baroque::Optional<TestComplexType>{Baroque::InPlace, 567}));
 
 		EXPECT_TRUE(valid.IsValid());
-		EXPECT_EQ(valid.Value().DummyValue, 567);
+		EXPECT_EQ(valid.Value().Value, 567);
 	}
 
 	EXPECT_EQ(TestComplexType::CtorCount, 1);
@@ -197,13 +197,13 @@ TEST(Optional, CopyAssignmentOperatorShouldWorkWithComplexType)
 		Baroque::Optional<TestComplexType> first{ Baroque::InPlace, 34 };
 		Baroque::Optional<TestComplexType> second{ Baroque::InPlace, 90 };
 
-		EXPECT_EQ(first.Value().DummyValue, 34);
-		EXPECT_EQ(second.Value().DummyValue, 90);
+		EXPECT_EQ(first.Value().Value, 34);
+		EXPECT_EQ(second.Value().Value, 90);
 
 		first = second;
 
 		EXPECT_TRUE(first.IsValid());
-		EXPECT_EQ(first.Value().DummyValue, 90);
+		EXPECT_EQ(first.Value().Value, 90);
 	}
 
 	EXPECT_EQ(TestComplexType::CtorCount, 2);
@@ -218,12 +218,12 @@ TEST(Optional, DirectCopyAssignmentOperatorShouldWorkWithComplexType)
 
 	{
 		Baroque::Optional<TestComplexType> optional{ Baroque::InPlace, 34 };
-		EXPECT_EQ(optional.Value().DummyValue, 34);
+		EXPECT_EQ(optional.Value().Value, 34);
 
 		TestComplexType copy{ 567 };
 		optional = copy;
 
-		EXPECT_EQ(optional.Value().DummyValue, 567);
+		EXPECT_EQ(optional.Value().Value, 567);
 	}
 
 	EXPECT_EQ(TestComplexType::CtorCount, 2);
@@ -252,7 +252,7 @@ TEST(Optional, CopyAssignANullValueShouldCallDestructorOfComplexType)
 		Baroque::Optional<TestComplexType> first{ Baroque::InPlace, 34 };
 		Baroque::Optional<TestComplexType> null;
 
-		EXPECT_EQ(first.Value().DummyValue, 34);
+		EXPECT_EQ(first.Value().Value, 34);
 		EXPECT_FALSE(null.IsValid());
 
 		first = null;
@@ -274,13 +274,13 @@ TEST(Optional, MoveAssignmentOperatorShouldWorkWithComplexType)
 		Baroque::Optional<TestComplexType> first{ Baroque::InPlace, 34 };
 		Baroque::Optional<TestComplexType> second{ Baroque::InPlace, 90 };
 
-		EXPECT_EQ(first.Value().DummyValue, 34);
-		EXPECT_EQ(second.Value().DummyValue, 90);
+		EXPECT_EQ(first.Value().Value, 34);
+		EXPECT_EQ(second.Value().Value, 90);
 
 		first = std::move(second);
 
 		EXPECT_TRUE(first.IsValid());
-		EXPECT_EQ(first.Value().DummyValue, 90);
+		EXPECT_EQ(first.Value().Value, 90);
 	}
 
 	EXPECT_EQ(TestComplexType::CtorCount, 2);
@@ -301,7 +301,7 @@ TEST(Optional, DirectMoveAssigmentShouldWorkWithComplexType)
 		testMoveDirect = TestComplexType{ 987 };
 
 		EXPECT_TRUE(testMoveDirect.IsValid());
-		EXPECT_EQ(testMoveDirect.Value().DummyValue, 987);
+		EXPECT_EQ(testMoveDirect.Value().Value, 987);
 	}
 
 	EXPECT_EQ(TestComplexType::CtorCount, 1);
@@ -317,12 +317,12 @@ TEST(Optional, DirectMoveAssigmentShouldCallTheDtorOfComplexType)
 	{
 		Baroque::Optional<TestComplexType> testMoveDirect{ Baroque::InPlace, 123 };
 		EXPECT_TRUE(testMoveDirect.IsValid());
-		EXPECT_EQ(testMoveDirect.Value().DummyValue, 123);
+		EXPECT_EQ(testMoveDirect.Value().Value, 123);
 
 		testMoveDirect = TestComplexType{ 987 };
 
 		EXPECT_TRUE(testMoveDirect.IsValid());
-		EXPECT_EQ(testMoveDirect.Value().DummyValue, 987);
+		EXPECT_EQ(testMoveDirect.Value().Value, 987);
 	}
 
 	EXPECT_EQ(TestComplexType::CtorCount, 2);
@@ -344,7 +344,7 @@ TEST(Optional, EmplaceShouldWork)
 
 		EXPECT_TRUE(testEmplace.IsValid());
 
-		EXPECT_EQ(testEmplace.Value().DummyValue, 345);
+		EXPECT_EQ(testEmplace.Value().Value, 345);
 	}
 
 	EXPECT_EQ(TestComplexType::CtorCount, 1);
@@ -366,7 +366,7 @@ TEST(Optional, EmplaceShouldCallDtorWhenHavingAlreadyAValidValue)
 
 		EXPECT_TRUE(testEmplace.IsValid());
 
-		EXPECT_EQ(testEmplace.Value().DummyValue, 345);
+		EXPECT_EQ(testEmplace.Value().Value, 345);
 	}
 
 	EXPECT_EQ(TestComplexType::CtorCount, 2);

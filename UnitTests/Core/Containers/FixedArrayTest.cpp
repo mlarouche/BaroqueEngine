@@ -75,14 +75,14 @@ TEST(FixedArray, ShouldCopyArrayOfComplexTypesWithCopyCtor)
 
 		for (std::size_t i = 0; i < TestSize; ++i)
 		{
-			original[i].DummyValue = static_cast<int>(i + 1);
+			original[i].Value = static_cast<int>(i + 1);
 		}
 
 		Baroque::FixedArray<TestComplexType, TestSize> copy(original);
 
 		for (int i = 0; i < TestSize; ++i)
 		{
-			EXPECT_EQ(copy[i].DummyValue, i + 1);
+			EXPECT_EQ(copy[i].Value, i + 1);
 		}
 	}
 
@@ -119,14 +119,14 @@ TEST(FixedArray, ShouldMoveArrayOfComplexType)
 
 		for (std::size_t i = 0; i < TestSize; ++i)
 		{
-			original[i].DummyValue = static_cast<int>(i + 1);
+			original[i].Value = static_cast<int>(i + 1);
 		}
 
 		Baroque::FixedArray<TestComplexType, TestSize> moved(std::move(original));
 
 		for (int i = 0; i < TestSize; ++i)
 		{
-			EXPECT_EQ(moved[i].DummyValue, i + 1);
+			EXPECT_EQ(moved[i].Value, i + 1);
 		}
 
 		for (std::size_t i = 0; i < TestSize; ++i)
@@ -168,14 +168,14 @@ TEST(FixedArray, CopyAssignmentComplexTypes)
 
 		for (int i = 0; i < TestSize; ++i)
 		{
-			original[i].DummyValue = i + 1;
+			original[i].Value = i + 1;
 		}
 
 		Baroque::FixedArray<TestComplexType, TestSize> copy = original;
 
 		for (int i = 0; i < TestSize; ++i)
 		{
-			EXPECT_EQ(copy[i].DummyValue, i + 1);
+			EXPECT_EQ(copy[i].Value, i + 1);
 		}
 	}
 
@@ -212,14 +212,14 @@ TEST(FixedArray, MoveAssignmentComplexTypes)
 
 		for (int i = 0; i < TestSize; ++i)
 		{
-			original[i].DummyValue = i + 1;
+			original[i].Value = i + 1;
 		}
 
 		Baroque::FixedArray<TestComplexType, TestSize> moved = std::move(original);
 
 		for (int i = 0; i < TestSize; ++i)
 		{
-			EXPECT_EQ(moved[i].DummyValue, i + 1);
+			EXPECT_EQ(moved[i].Value, i + 1);
 		}
 
 		for (std::size_t i = 0; i < TestSize; ++i)

@@ -179,7 +179,7 @@ TEST(Array, CopyConstructorWithComplexType)
 		Baroque::Array<TestComplexType> original(5);
 		for (std::size_t i = 0; i < original.Size(); ++i)
 		{
-			original[i].DummyValue = static_cast<int>((i + 1) * 100);
+			original[i].Value = static_cast<int>((i + 1) * 100);
 		}
 
 		Baroque::Array<TestComplexType> copy(original);
@@ -190,7 +190,7 @@ TEST(Array, CopyConstructorWithComplexType)
 
 		for (std::size_t i = 0; i < original.Size(); ++i)
 		{
-			EXPECT_EQ(copy[i].DummyValue, (i + 1) * 100);
+			EXPECT_EQ(copy[i].Value, (i + 1) * 100);
 		}
 	}
 
@@ -282,7 +282,7 @@ TEST(Array, CopyAssignmentShouldDeletePreviousAllocationAndDeleteComplexType)
 
 		for (std::size_t i = 0; i < original.Size(); ++i)
 		{
-			original[i].DummyValue = static_cast<int>((i + 1) * 200);
+			original[i].Value = static_cast<int>((i + 1) * 200);
 		}
 
 		Baroque::Array<TestComplexType, VerifyDealloc> copy(8);
@@ -302,7 +302,7 @@ TEST(Array, CopyAssignmentShouldDeletePreviousAllocationAndDeleteComplexType)
 
 		for (std::size_t i = 0; i < original.Size(); ++i)
 		{
-			EXPECT_EQ(copy[i].DummyValue, (i + 1) * 200);
+			EXPECT_EQ(copy[i].Value, (i + 1) * 200);
 		}
 	}
 
@@ -352,7 +352,7 @@ TEST(Array, MoveAssignmentShouldDeletePreviousContent)
 
 		for (std::size_t i = 0; i < original.Size(); ++i)
 		{
-			original[i].DummyValue = static_cast<int>((i + 1) * 200);
+			original[i].Value = static_cast<int>((i + 1) * 200);
 		}
 
 		auto* originalData = original.Data();
@@ -378,7 +378,7 @@ TEST(Array, MoveAssignmentShouldDeletePreviousContent)
 
 		for (std::size_t i = 0; i < original.Size(); ++i)
 		{
-			EXPECT_EQ(moved[i].DummyValue, (i + 1) * 200);
+			EXPECT_EQ(moved[i].Value, (i + 1) * 200);
 		}
 	}
 
@@ -404,7 +404,7 @@ TEST(Array, ShouldAddByCopy)
 		array.Add(item);
 
 		EXPECT_NE(array.Data(), nullptr);
-		EXPECT_EQ(array[0].DummyValue, 123);
+		EXPECT_EQ(array[0].Value, 123);
 		EXPECT_EQ(array.Size(), 1);
 		EXPECT_GT(array.Capacity(), 1);
 	}
@@ -430,7 +430,7 @@ TEST(Array, ShouldAddByMove)
 		array.Add(TestComplexType{ 345 });
 
 		EXPECT_NE(array.Data(), nullptr);
-		EXPECT_EQ(array[0].DummyValue, 345);
+		EXPECT_EQ(array[0].Value, 345);
 		EXPECT_EQ(array.Size(), 1);
 		EXPECT_GT(array.Capacity(), 1);
 	}
@@ -526,7 +526,7 @@ TEST(Array, ContainsByPredicate)
 	Baroque::Array<TestComplexType> array;
 
 	auto predicate = [](const TestComplexType& item) {
-		return item.DummyValue == 69;
+		return item.Value == 69;
 	};
 
 	EXPECT_FALSE(array.ContainsByPredicate(predicate));
@@ -555,7 +555,7 @@ TEST(Array, FindByPredicate)
 	Baroque::Array<TestComplexType> array;
 
 	auto predicate = [](const TestComplexType& item) {
-		return item.DummyValue == 69;
+		return item.Value == 69;
 	};
 
 	EXPECT_EQ(array.FindByPredicate(predicate), nullptr);
@@ -565,7 +565,7 @@ TEST(Array, FindByPredicate)
 
 	auto foundIt = array.FindByPredicate(predicate);
 	EXPECT_EQ(foundIt, array.Data() + 1);
-	EXPECT_EQ(foundIt->DummyValue, 69);
+	EXPECT_EQ(foundIt->Value, 69);
 }
 
 TEST(Array, IndexOf)
@@ -585,7 +585,7 @@ TEST(Array, IndexOfByPredicate)
 	Baroque::Array<TestComplexType> array;
 
 	auto predicate = [](const TestComplexType& item) {
-		return item.DummyValue == 69;
+		return item.Value == 69;
 	};
 
 	EXPECT_EQ(array.IndexOfByPredicate(predicate), array.Size());
@@ -642,12 +642,12 @@ TEST(Array, Emplace)
 	array.Emplace();
 
 	EXPECT_EQ(array.Size(), 1);
-	EXPECT_EQ(array[0].DummyValue, 42);
+	EXPECT_EQ(array[0].Value, 42);
 
 	array.Emplace(69);
 
 	EXPECT_EQ(array.Size(), 2);
-	EXPECT_EQ(array[1].DummyValue, 69);
+	EXPECT_EQ(array[1].Value, 69);
 }
 
 // Insert one value
@@ -671,12 +671,12 @@ TEST(Array, InsertByCopy)
 
 		array.Insert(1, ExpectedResults[1]);
 
-		EXPECT_EQ(array[1].DummyValue, 4);
+		EXPECT_EQ(array[1].Value, 4);
 		EXPECT_EQ(array.Size(), 4);
 
 		for (std::size_t i = 0; i < array.Size(); ++i)
 		{
-			EXPECT_EQ(array[i].DummyValue, ExpectedResults[i].DummyValue);
+			EXPECT_EQ(array[i].Value, ExpectedResults[i].Value);
 		}
 	}
 
@@ -707,12 +707,12 @@ TEST(Array, InsertByMove)
 
 		array.Insert(1, TestComplexType{4});
 
-		EXPECT_EQ(array[1].DummyValue, 4);
+		EXPECT_EQ(array[1].Value, 4);
 		EXPECT_EQ(array.Size(), 4);
 
 		for (std::size_t i = 0; i < array.Size(); ++i)
 		{
-			EXPECT_EQ(array[i].DummyValue, ExpectedResults[i].DummyValue);
+			EXPECT_EQ(array[i].Value, ExpectedResults[i].Value);
 		}
 	}
 
@@ -871,7 +871,7 @@ TEST(Array, EmplaceAt)
 
 	for (std::size_t i = 0; i < array.Size(); ++i)
 	{
-		EXPECT_EQ(array[i].DummyValue, ExpectedResults[i].DummyValue);
+		EXPECT_EQ(array[i].Value, ExpectedResults[i].Value);
 	}
 }
 
@@ -922,7 +922,7 @@ TEST(Array, RemoveByValue)
 
 	for (std::size_t i = 0; i < array.Size(); ++i)
 	{
-		EXPECT_EQ(array[i].DummyValue, ExpectedResults[i]);
+		EXPECT_EQ(array[i].Value, ExpectedResults[i]);
 	}
 }
 
@@ -943,7 +943,7 @@ TEST(Array, RemoveWithPredicate)
 	TestComplexType::Reset();
 
 	auto removed = array.RemoveByPredicate([](const TestComplexType& item) {
-		return item.DummyValue == 2;
+		return item.Value == 2;
 	});
 
 	EXPECT_EQ(TestComplexType::DtorCount, 2);
@@ -955,7 +955,7 @@ TEST(Array, RemoveWithPredicate)
 
 	for (std::size_t i = 0; i < array.Size(); ++i)
 	{
-		EXPECT_EQ(array[i].DummyValue, ExpectedResults[i]);
+		EXPECT_EQ(array[i].Value, ExpectedResults[i]);
 	}
 }
 
@@ -984,7 +984,7 @@ TEST(Array, RemoveAt)
 
 	for (std::size_t i = 0; i < array.Size(); ++i)
 	{
-		EXPECT_EQ(array[i].DummyValue, ExpectedResults[i]);
+		EXPECT_EQ(array[i].Value, ExpectedResults[i]);
 	}
 }
 
@@ -1013,7 +1013,7 @@ TEST(Array, RemoveAtFront)
 
 	for (std::size_t i = 0; i < array.Size(); ++i)
 	{
-		EXPECT_EQ(array[i].DummyValue, ExpectedResults[i]);
+		EXPECT_EQ(array[i].Value, ExpectedResults[i]);
 	}
 }
 
@@ -1042,7 +1042,7 @@ TEST(Array, RemoveAtLast)
 
 	for (std::size_t i = 0; i < array.Size(); ++i)
 	{
-		EXPECT_EQ(array[i].DummyValue, ExpectedResults[i]);
+		EXPECT_EQ(array[i].Value, ExpectedResults[i]);
 	}
 }
 
@@ -1065,7 +1065,7 @@ TEST(Array, Erase)
 	auto it = array.begin();
 	while (it != array.end())
 	{
-		if (it->DummyValue == 2)
+		if (it->Value == 2)
 		{
 			it = array.Erase(it);
 		}
@@ -1083,7 +1083,7 @@ TEST(Array, Erase)
 
 	for (std::size_t i = 0; i < array.Size(); ++i)
 	{
-		EXPECT_EQ(array[i].DummyValue, ExpectedResults[i]);
+		EXPECT_EQ(array[i].Value, ExpectedResults[i]);
 	}
 }
 
@@ -1181,11 +1181,11 @@ TEST(Array, Front)
 	array.Emplace(69);
 	array.Emplace(78);
 
-	EXPECT_EQ(array.Front().DummyValue, 69);
+	EXPECT_EQ(array.Front().Value, 69);
 	
-	array.Front().DummyValue = 12;
+	array.Front().Value = 12;
 
-	EXPECT_EQ(array.Front().DummyValue, 12);
+	EXPECT_EQ(array.Front().Value, 12);
 }
 
 TEST(Array, Last)
@@ -1196,11 +1196,11 @@ TEST(Array, Last)
 	array.Emplace(34);
 	array.Emplace(56);
 
-	EXPECT_EQ(array.Last().DummyValue, 56);
+	EXPECT_EQ(array.Last().Value, 56);
 
-	array.Last().DummyValue = 100;
+	array.Last().Value = 100;
 
-	EXPECT_EQ(array.Last().DummyValue, 100);
+	EXPECT_EQ(array.Last().Value, 100);
 }
 
 TEST(Array, ShouldSupportStackSemantics)
@@ -1222,19 +1222,18 @@ TEST(Array, ShouldSupportStackSemantics)
 	EXPECT_EQ(TestComplexType::CopyCtorCount, 0);
 
 	EXPECT_EQ(stack.Size(), 3);
-	EXPECT_EQ(stack.Top().DummyValue, 3);
+	EXPECT_EQ(stack.Top().Value, 3);
 
 	TestComplexType::Reset();
 
 	for (std::size_t i = 0; i < 3; ++i)
 	{
 		auto poppedValue = stack.Pop();
-		EXPECT_EQ(poppedValue.DummyValue, ExpectedResults[i]);
+		EXPECT_EQ(poppedValue.Value, ExpectedResults[i]);
 	}
 
 	EXPECT_EQ(TestComplexType::CtorCount, 0);
 	EXPECT_EQ(TestComplexType::DtorCount, 6);
-	EXPECT_EQ(TestComplexType::MoveCtorCount, 3);
 	EXPECT_EQ(TestComplexType::CopyCtorCount, 3);
 }
 

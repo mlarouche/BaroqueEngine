@@ -5,14 +5,14 @@
 struct TestComplexType
 {
 	TestComplexType();
-	TestComplexType(int Value);
+	TestComplexType(int value);
 	~TestComplexType();
 	TestComplexType(const TestComplexType& copy);
 	TestComplexType(TestComplexType&& move);
 
 	TestComplexType& operator=(const TestComplexType& copy);
 
-	int DummyValue = 42;
+	int Value = 42;
 	bool DoDtor = true;
 
 	static void Reset();

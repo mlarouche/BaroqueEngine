@@ -11,10 +11,10 @@ TestComplexType::TestComplexType()
 	++CtorCount;
 }
 
-TestComplexType::TestComplexType(int Value)
+TestComplexType::TestComplexType(int value)
 : TestComplexType()
 {
-	DummyValue = Value;
+	Value = value;
 }
 
 TestComplexType::~TestComplexType()
@@ -26,13 +26,13 @@ TestComplexType::~TestComplexType()
 }
 
 TestComplexType::TestComplexType(const TestComplexType& copy)
-: DummyValue(copy.DummyValue)
+: Value(copy.Value)
 {
 	++CopyCtorCount;
 }
 
 TestComplexType::TestComplexType(TestComplexType&& move)
-: DummyValue(move.DummyValue)
+: Value(move.Value)
 {
 	++MoveCtorCount;
 	move.DoDtor = false;
@@ -42,7 +42,7 @@ TestComplexType& TestComplexType::operator=(const TestComplexType& copy)
 {
 	if (this != &copy)
 	{
-		DummyValue = copy.DummyValue;
+		Value = copy.Value;
 		++CopyAssignmentCount;
 	}
 
@@ -61,6 +61,6 @@ void TestComplexType::Reset()
 bool operator==(const TestComplexType& left, const TestComplexType& right)
 {
 	return left.DoDtor == right.DoDtor
-		&& left.DummyValue == right.DummyValue
+		&& left.Value == right.Value
 		;
 }
