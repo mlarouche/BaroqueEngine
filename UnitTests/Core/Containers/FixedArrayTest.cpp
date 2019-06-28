@@ -299,6 +299,21 @@ TEST(FixedArray, Contains)
 	EXPECT_TRUE(test.Contains(42));
 }
 
+TEST(FixedArray, ContainsByPredicate)
+{
+	Baroque::FixedArray<TestComplexType, TestSize> test;
+
+	auto predicate = [](const auto& item) {
+		return item.Value == 2;
+	};
+
+	EXPECT_FALSE(test.ContainsByPredicate(predicate));
+
+	test[0].Value = 2;
+
+	EXPECT_TRUE(test.ContainsByPredicate(predicate));
+}
+
 TEST(FixedArray, IndexOf)
 {
 	Baroque::FixedArray<int, TestSize> test;
@@ -308,6 +323,71 @@ TEST(FixedArray, IndexOf)
 	test[2] = 42;
 
 	EXPECT_EQ(test.IndexOf(42), 2);
+}
+
+TEST(FixedArray, IndexOfByPredicate)
+{
+	Baroque::FixedArray<TestComplexType, TestSize> test;
+
+	auto predicate = [](const auto& item) {
+		return item.Value == 69;
+	};
+
+	EXPECT_EQ(test.IndexOfByPredicate(predicate), TestSize);
+
+	test[2].Value = 69;
+
+	EXPECT_EQ(test.IndexOfByPredicate(predicate), 2);
+}
+
+TEST(FixedArray, Find)
+{
+	Baroque::FixedArray<TestComplexType, TestSize> test;
+
+	EXPECT_EQ(test.Find(1), nullptr);
+
+	test[2].Value = 200;
+
+	auto foundIt = test.Find(200);
+
+	EXPECT_NE(foundIt, nullptr);
+	EXPECT_EQ(foundIt->Value, 200);
+}
+
+TEST(FixedArray, FindByPredicate)
+{
+	Baroque::FixedArray<TestComplexType, TestSize> test;
+
+	auto predicate = [](const auto& item) {
+		return item.Value == 200;
+	};
+
+	EXPECT_EQ(test.FindByPredicate(predicate), nullptr);
+
+	test[2].Value = 200;
+
+	auto foundIt = test.FindByPredicate(predicate);
+
+	EXPECT_NE(foundIt, nullptr);
+	EXPECT_EQ(foundIt->Value, 200);
+}
+
+TEST(FixedArray, Front)
+{
+	Baroque::FixedArray<TestComplexType, TestSize> test;
+
+	test[0].Value = 200;
+
+	EXPECT_EQ(test.Front().Value, 200);
+}
+
+TEST(FixedArray, Last)
+{
+	Baroque::FixedArray<TestComplexType, TestSize> test;
+
+	test[TestSize - 1] = 200;
+
+	EXPECT_EQ(test.Last(), 200);
 }
 
 TEST(FixedArray, ConvertToArrayView)

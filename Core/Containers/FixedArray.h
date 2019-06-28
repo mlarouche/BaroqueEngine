@@ -146,6 +146,20 @@ namespace Baroque
 			return false;
 		}
 
+		template<typename Predicate>
+		constexpr bool ContainsByPredicate(const Predicate& predicate) const
+		{
+			for (SizeType i = 0; i < ArraySize; ++i)
+			{
+				if (predicate(_array[i]))
+				{
+					return true;
+				}
+			}
+
+			return false;
+		}
+
 		constexpr Pointer Data()
 		{
 			return _array;
@@ -167,6 +181,82 @@ namespace Baroque
 			}
 		}
 
+		constexpr Pointer Find(ConstReference value)
+		{
+			auto* it = begin();
+			auto* itEnd = end();
+
+			for (; it != itEnd; ++it)
+			{
+				if (*it == value)
+				{
+					return it;
+				}
+			}
+
+			return nullptr;
+		}
+
+		constexpr ConstPointer Find(ConstReference value) const
+		{
+			auto* it = begin();
+			auto* itEnd = end();
+
+			for (; it != itEnd; ++it)
+			{
+				if (*it == value)
+				{
+					return it;
+				}
+			}
+
+			return nullptr;
+		}
+
+		template<typename Predicate>
+		constexpr Pointer FindByPredicate(const Predicate& predicate)
+		{
+			auto* it = begin();
+			auto* itEnd = end();
+
+			for (; it != itEnd; ++it)
+			{
+				if (predicate(*it))
+				{
+					return it;
+				}
+			}
+
+			return nullptr;
+		}
+
+		template<typename Predicate>
+		constexpr ConstPointer FindByPredicate(const Predicate& predicate) const
+		{
+			auto* it = begin();
+			auto* itEnd = end();
+
+			for (; it != itEnd; ++it)
+			{
+				if (predicate(*it))
+				{
+					return it;
+				}
+			}
+
+			return nullptr;
+		}
+
+		constexpr Reference Front()
+		{
+			return *begin();
+		}
+
+		constexpr ConstReference Front() const
+		{
+			return *begin();
+		}
+
 		constexpr SizeType IndexOf(ConstReference value) const
 		{
 			for (SizeType i = 0; i < ArraySize; ++i)
@@ -178,6 +268,30 @@ namespace Baroque
 			}
 
 			return ArraySize;
+		}
+
+		template<typename Predicate>
+		constexpr SizeType IndexOfByPredicate(const Predicate& predicate) const
+		{
+			for (SizeType i = 0; i < ArraySize; ++i)
+			{
+				if (predicate(_array[i]))
+				{
+					return i;
+				}
+			}
+
+			return ArraySize;
+		}
+
+		constexpr Reference Last()
+		{
+			return *(end() - 1);
+		}
+
+		constexpr ConstReference Last() const
+		{
+			return *(end() - 1);
 		}
 
 		constexpr ArraySpan<T> Slice(SizeType start, SizeType end)

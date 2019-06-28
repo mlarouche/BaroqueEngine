@@ -50,15 +50,26 @@ namespace Baroque
 
 		constexpr bool Contains(ConstReference value) const
 		{
-			auto it = _begin;
-			while (it != _end)
+			for(auto& entry : *this)
 			{
-				if (*it == value)
+				if (entry == value)
 				{
 					return true;
 				}
+			}
 
-				++it;
+			return false;
+		}
+
+		template<typename Predicate>
+		constexpr bool ContainsByPredicate(const Predicate& predicate) const
+		{
+			for (auto& entry : *this)
+			{
+				if (predicate(entry))
+				{
+					return true;
+				}
 			}
 
 			return false;
@@ -86,6 +97,81 @@ namespace Baroque
 			}
 
 			return Size();
+		}
+
+		template<typename Predicate>
+		constexpr SizeType IndexOfByPredicate(const Predicate& predicate) const
+		{
+			auto it = _begin;
+			SizeType index = 0;
+
+			while (it != _end)
+			{
+				if (predicate(*it))
+				{
+					return index;
+				}
+
+				++it;
+				++index;
+			}
+
+			return Size();
+		}
+
+		constexpr bool IsEmpty() const
+		{
+			return _begin == _end;
+		}
+
+		constexpr bool IsNull() const
+		{
+			return _begin == nullptr
+				&& _end == nullptr
+				;
+		}
+
+		constexpr ConstPointer Find(ConstReference value) const
+		{
+			auto* it = begin();
+			auto* itEnd = end();
+
+			for (; it != itEnd; ++it)
+			{
+				if (*it == value)
+				{
+					return it;
+				}
+			}
+
+			return nullptr;
+		}
+
+		template<typename Predicate>
+		constexpr ConstPointer FindByPredicate(const Predicate& predicate) const
+		{
+			auto* it = begin();
+			auto* itEnd = end();
+
+			for (; it != itEnd; ++it)
+			{
+				if (predicate(*it))
+				{
+					return it;
+				}
+			}
+
+			return nullptr;
+		}
+
+		constexpr ConstReference Front() const
+		{
+			return *begin();
+		}
+
+		constexpr ConstReference Last() const
+		{
+			return *(end() - 1);
 		}
 
 		constexpr ArrayView<T> Slice(SizeType start, SizeType end) const

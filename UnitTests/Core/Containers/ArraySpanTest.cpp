@@ -39,12 +39,22 @@ TEST(ArraySpan, DefaultArrayViewShouldHaveNullBeginAndEnd)
 {
 	Baroque::ArraySpan<int> null;
 
-	std::string_view test;
+	EXPECT_TRUE(null.IsEmpty());
+	EXPECT_TRUE(null.IsNull());
 
 	EXPECT_EQ(null.begin(), nullptr);
 	EXPECT_EQ(null.end(), nullptr);
 }
 
+TEST(ArraySpan, IsEmptyShouldWorkWithArrayOfZeroSize)
+{
+	int ZeroInt = 0;
+
+	Baroque::ArraySpan<int> span(&ZeroInt, &ZeroInt);
+
+	EXPECT_TRUE(span.IsEmpty());
+	EXPECT_FALSE(span.IsNull());
+}
 TEST(ArraySpan, ShouldConstructFromANativeArray)
 {
 	Baroque::ArraySpan<int> native(TestArray);
@@ -119,12 +129,74 @@ TEST(ArraySpan, Contains)
 	EXPECT_TRUE(test.Contains(200));
 }
 
+TEST(ArraySpan, ContainsByPredicate)
+{
+	Baroque::ArraySpan<int> test(TestArray);
+
+	EXPECT_FALSE(test.ContainsByPredicate([](const auto& item) { return item == 2; }));
+	EXPECT_TRUE(test.ContainsByPredicate([](const auto& item) { return item == 200; }));
+}
+
 TEST(ArraySpan, IndexOf)
 {
 	Baroque::ArraySpan<int> test(TestArray);
 
 	EXPECT_EQ(test.IndexOf(1), test.Size());
 	EXPECT_EQ(test.IndexOf(300), 2);
+}
+
+TEST(ArraySpan, IndexOfByPredicate)
+{
+	Baroque::ArraySpan<int> test(TestArray);
+
+	auto firstIndexOf = test.IndexOfByPredicate([](const auto& item) { return item == 2; });
+	auto secondIndexOf = test.IndexOfByPredicate([](const auto& item) { return item == 300; });
+	EXPECT_EQ(firstIndexOf, test.Size());
+	EXPECT_EQ(secondIndexOf, 2);
+}
+
+TEST(ArraySpan, Find)
+{
+	Baroque::ArraySpan<int> test(TestArray);
+
+	EXPECT_EQ(test.Find(1), nullptr);
+
+	auto foundIt = test.Find(200);
+	EXPECT_NE(foundIt, nullptr);
+	EXPECT_EQ(*foundIt, 200);
+}
+
+TEST(ArraySpan, FindByPredicate)
+{
+	Baroque::ArraySpan<int> test(TestArray);
+
+	auto notFoundPredicate = [](const auto& item) {
+		return item == 1;
+	};
+
+	auto foundPredicate = [](const auto& item) {
+		return item == 200;
+	};
+
+	EXPECT_EQ(test.FindByPredicate(notFoundPredicate), nullptr);
+
+	auto foundIt = test.FindByPredicate(foundPredicate);
+	EXPECT_NE(foundIt, nullptr);
+	EXPECT_EQ(*foundIt, 200);
+}
+
+TEST(ArraySpan, Front)
+{
+	Baroque::ArraySpan<int> test(TestArray);
+
+	EXPECT_EQ(test.Front(), 100);
+}
+
+TEST(ArraySpan, Last)
+{
+	Baroque::ArraySpan<int> test(TestArray);
+
+	EXPECT_EQ(test.Last(), 500);
 }
 
 TEST(ArraySpan, Slice)
