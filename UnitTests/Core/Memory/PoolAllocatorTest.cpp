@@ -7,6 +7,8 @@ namespace
 {
 	struct TestAllocator
 	{
+		static constexpr std::size_t ArrayCapacity = 0;
+
 		void* Allocate(const std::size_t size)
 		{
 			++AllocateCount;

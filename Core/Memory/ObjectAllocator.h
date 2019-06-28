@@ -10,6 +10,8 @@ namespace Baroque
 		class ObjectAllocator : private BackendAllocator
 		{
 		public:
+			static constexpr std::size_t ArrayCapacity = 0;
+
 			template<typename... Args>
 			T* Allocate(Args&& ... args)
 			{

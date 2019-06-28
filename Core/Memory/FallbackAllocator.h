@@ -10,6 +10,8 @@ namespace Baroque
 		class FallbackAllocator : private Primary, private Fallback
 		{
 		public:
+			static constexpr std::size_t ArrayCapacity = Primary::ArrayCapacity;
+
 			void* Allocate(const std::size_t size)
 			{
 				void* result = Primary::Allocate(size);

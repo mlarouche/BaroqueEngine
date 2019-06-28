@@ -23,3 +23,5 @@ struct TestComplexType
 	static std::size_t DtorCount;
 	static std::size_t CopyAssignmentCount;
 };
+
+bool operator==(const TestComplexType& left, const TestComplexType& right);

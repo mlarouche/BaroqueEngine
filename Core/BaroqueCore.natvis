@@ -14,6 +14,16 @@
       <ExpandedItem Condition="_ptr != 0">_ptr</ExpandedItem>
     </Expand>
   </Type>
+  <Type Name="Baroque::ArrayImplementation&lt;*,*&gt;">
+    <DisplayString>{{ size={_size} }}</DisplayString>
+    <Expand>
+      <Item Name="[size]" ExcludeView="simple">_size</Item>
+      <ArrayItems>
+        <Size>_size</Size>
+        <ValuePointer>($T1*)_data</ValuePointer>
+      </ArrayItems>
+    </Expand>
+  </Type>
   <Type Name="Baroque::FixedArray&lt;*,*&gt;">
     <DisplayString>{{ size={$T2} }}</DisplayString>
     <Expand>

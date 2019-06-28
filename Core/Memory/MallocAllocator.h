@@ -9,6 +9,8 @@ namespace Baroque
 		class BAROQUE_CORE_API MallocAllocator
 		{
 		public:
+			static constexpr std::size_t ArrayCapacity = 0;
+
 			void* Allocate(const std::size_t size);
 			void Deallocate(void* ptr);
 		};

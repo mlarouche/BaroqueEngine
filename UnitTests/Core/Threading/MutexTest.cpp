@@ -12,7 +12,7 @@ namespace
 	void mutexTestThreadFunction(Baroque::Mutex* mutex)
 	{
 		mutex->Lock();
-		std::this_thread::sleep_for(100ms);
+		std::this_thread::sleep_for(200ms);
 		mutex->Unlock();
 	}
 }
@@ -21,7 +21,7 @@ TEST(Mutex, ShouldLock)
 {
 	Baroque::Mutex lock;
 	std::thread testThread(mutexTestThreadFunction, &lock);
-	std::this_thread::sleep_for(20ms);
+	std::this_thread::sleep_for(40ms);
 	EXPECT_FALSE(lock.TryLock());
 	testThread.join();
 }

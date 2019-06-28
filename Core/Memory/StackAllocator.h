@@ -12,8 +12,10 @@ namespace Baroque
 		class StackAllocator
 		{
 		public:
+			static constexpr std::size_t ArrayCapacity = AllocSize;
+
 			StackAllocator()
-				: _top(_storage)
+			: _top(_storage)
 			{}
 
 			void* Allocate(const std::size_t size)
@@ -28,13 +30,21 @@ namespace Baroque
 					return nullptr;
 				}
 
-				void* result = _top;
+				_previous = _top;
 				_top += size;
-				return result;
+				return _previous;
 			}
 
-			void Deallocate(void*)
+			void Deallocate(void* ptr)
 			{
+				if (ptr == _previous)
+				{
+					_top = _previous;
+				}
+				else if (ptr == _storage)
+				{
+					_top = _storage;
+				}
 			}
 
 			bool Owns(const void* ptr) const
@@ -45,6 +55,7 @@ namespace Baroque
 		private:
 			std::uint8_t _storage[AllocSize];
 			std::uint8_t* _top = nullptr;
+			std::uint8_t* _previous = nullptr;
 		};
 	}
 }

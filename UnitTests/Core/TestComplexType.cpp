@@ -57,3 +57,10 @@ void TestComplexType::Reset()
 	DtorCount = 0;
 	CopyAssignmentCount = 0;
 }
+
+bool operator==(const TestComplexType& left, const TestComplexType& right)
+{
+	return left.DoDtor == right.DoDtor
+		&& left.DummyValue == right.DummyValue
+		;
+}

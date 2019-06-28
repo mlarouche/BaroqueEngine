@@ -4,8 +4,7 @@
 
 #include "Core/Containers/ArraySpan.h"
 #include "Core/Containers/ArrayView.h"
-
-#include <type_traits>
+#include "Core/TypeTraits.h"
 
 namespace Baroque
 {

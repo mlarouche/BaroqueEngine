@@ -17,6 +17,8 @@ namespace Baroque
 		public:
 			static_assert(EntrySize >= sizeof(void*), "Entry size must be greater or equal than a pointer size");
 
+			static constexpr std::size_t ArrayCapacity = 0;
+
 			PoolAllocator()
 			{
 				allocateMemoryBlock();

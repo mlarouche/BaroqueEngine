@@ -44,6 +44,8 @@ namespace Baroque
 		class TracingAllocator : private Allocator
 		{
 		public:
+			static constexpr std::size_t ArrayCapacity = Allocator::ArrayCapacity;
+
 			void* Allocate(const std::size_t size, const TraceMemoryCategory& category, const Baroque::SourceLocation& sourceLocation)
 			{
 				void* alloc = Allocator::Allocate(size);
@@ -72,9 +74,11 @@ namespace Baroque
 #endif
 
 #if defined(BAROQUE_TRACE_MEMORY)
+#define BAROQUE_EXTERN_MEMORY_CATEGORY(Name) extern Baroque::Memory::TraceMemoryCategory _Baroque_Trace_Category_##Name;
 #define BAROQUE_REGISTER_MEMORY_CATEGORY(Name) Baroque::Memory::TraceMemoryCategory _Baroque_Trace_Category_##Name(#Name);
 #define BAROQUE_GET_MEMORY_CATEGORY(Name) _Baroque_Trace_Category_##Name
 #else
+#define BAROQUE_EXTERN_MEMORY_CATEGORY(Name)
 #define BAROQUE_REGISTER_MEMORY_CATEGORY(Name)
 #define BAROQUE_GET_MEMORY_CATEGORY(Name)
 #endif

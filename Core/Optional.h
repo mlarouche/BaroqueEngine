@@ -1,7 +1,8 @@
 #pragma once
 
 #include "Core/CoreDefines.h"
-#include <type_traits>
+
+#include "Core/TypeTraits.h"
 
 namespace Baroque
 {
