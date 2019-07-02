@@ -23,7 +23,7 @@ function baroqueProject(name, projectKind)
         defines { "BAROQUE_RETAIL" }
 
     configuration "vs*"
-        buildoptions { "/permissive-" }
+        buildoptions { "/permissive-", "/arch:AVX" }
         defines { "NOMINMAX", "WIN32_LEAN_AND_MEAN", "VC_EXTRALEAN" }
 
     configuration "*"
