@@ -2,10 +2,17 @@
 
 #include "Core/CoreDefines.h"
 
+#include "Core/Containers/Array.h"
 #include "Core/Containers/ArrayView.h"
 
 namespace Baroque
 {
+	template<typename T, typename Allocator>
+	class ArrayImplementation;
+
+	template<typename T>
+	class ArrayView;
+
 	template<typename T>
 	class ArraySpan
 	{
@@ -28,6 +35,12 @@ namespace Baroque
 		constexpr ArraySpan(Pointer begin, SizeType size)
 		: _begin(begin)
 		, _end(begin + size)
+		{}
+
+		template<typename Allocator>
+		constexpr ArraySpan(const ArrayImplementation<T, Allocator>& array)
+		: _begin(array.begin())
+		, _end(array.end())
 		{}
 
 		template<SizeType ConstantArraySize>

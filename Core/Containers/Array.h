@@ -40,6 +40,12 @@ namespace Baroque
 		SizeType _capacity = 0;
 	};
 
+	template<typename T>
+	class ArraySpan;
+
+	template<typename T>
+	class ArrayView;
+
 	template<typename T, typename Allocator>
 	class ArrayImplementation : public BaseArray, private Allocator
 	{
@@ -339,13 +345,8 @@ namespace Baroque
 
 		Pointer Erase(ConstPointer position)
 		{
-			auto* data = Data();
-
-			SizeType index = position - data;
-
-			RemoveAt(index);
-
-			return const_cast<Pointer>(position + 1);
+			RemoveAt(position - Data());
+			return const_cast<Pointer>(position);
 		}
 
 		Pointer Find(ConstReference value)
