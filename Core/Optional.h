@@ -9,206 +9,73 @@ namespace Baroque
 	struct InPlaceType {};
 	inline constexpr InPlaceType InPlace{};
 
-	namespace Private
-	{
-		template<typename T, bool isTrivialDestructible>
-		class OptionalStorage
-		{
-		protected:
-			using ValueType = T;
-
-			OptionalStorage()
-			: _dummy('\0')
-			{
-			}
-
-			OptionalStorage(const ValueType& value)
-			: _isUsed(true)
-			, _value(value)
-			{}
-
-			OptionalStorage(ValueType&& value)
-			: _isUsed(true)
-			, _value(std::forward<T>(value))
-			{}
-
-			OptionalStorage(const OptionalStorage& copy)
-			: _isUsed(copy._isUsed)
-			{
-				if (_isUsed)
-				{
-					new (&_value) ValueType(copy._value);
-				}
-			}
-
-			OptionalStorage(OptionalStorage&& move)
-			: _isUsed(move._isUsed)
-			{
-				move._isUsed = false;
-
-				if (_isUsed)
-				{
-					new (&_value) ValueType(std::forward<ValueType>(move._value));
-				}
-			}
-
-			template<typename... Args>
-			OptionalStorage(InPlaceType, Args&& ... args)
-			: _isUsed(true)
-			{
-				new (&_value) ValueType(std::forward<Args>(args)...);
-			}
-
-			~OptionalStorage()
-			{
-				destroy();
-			}
-
-			void destroy()
-			{
-				if (_isUsed)
-				{
-					_value.~ValueType();
-				}
-			}
-
-		protected:
-			// mlarouche - The union is used to disable the automatic call to a
-			// complex type ctor/dtor. It allows defaut-constructed Optional of 
-			// a complex type to be near no-op.
-			union
-			{
-				std::uint8_t _dummy;
-				T _value;
-			};
-
-			bool _isUsed = false;
-		};
-
-		// Trivial case
-		template<typename T>
-		class OptionalStorage<T, true>
-		{
-		protected:
-			using ValueType = T;
-
-			OptionalStorage()
-			: _dummy('\0')
-			{
-			}
-
-			OptionalStorage(const ValueType& value)
-			: _isUsed(true)
-			, _value(value)
-			{}
-
-			OptionalStorage(ValueType&& value)
-			: _isUsed(true)
-			, _value(std::forward<T>(value))
-			{}
-
-			OptionalStorage(const OptionalStorage& copy)
-			: _isUsed(copy._isUsed)
-			{
-				if (_isUsed)
-				{
-					new (&_value) ValueType(copy._value);
-				}
-			}
-
-			OptionalStorage(OptionalStorage&& move)
-				: _isUsed(move._isUsed)
-			{
-				move._isUsed = false;
-
-				if (_isUsed)
-				{
-					new (&_value) ValueType(std::forward<ValueType>(move._value));
-				}
-			}
-
-			template<typename... Args>
-			OptionalStorage(InPlaceType, Args&& ... args)
-			: _isUsed(true)
-			{
-				new (&_value) ValueType(std::forward<Args>(args)...);
-			}
-
-			~OptionalStorage()
-			{
-			}
-
-			void destroy()
-			{
-			}
-
-		protected:
-			// mlarouche - The union is used to disable the automatic call to a
-			// complex type ctor/dtor. It allows defaut-constructed Optional of 
-			// a complex type to be near no-op.
-			union
-			{
-				std::uint8_t _dummy;
-				T _value;
-			};
-
-			bool _isUsed = false;
-		};
-	}
-
 	template<typename T>
-	class Optional : private Private::OptionalStorage<T, std::is_trivially_destructible<T>::value>
+	class Optional
 	{
 	public:
 		using ValueType = T;
-		using Base = Private::OptionalStorage<T, std::is_trivially_destructible<T>::value>;
 
 		Optional()
-		: Base()
+		: _dummy('\0')
 		{
 		}
 
 		Optional(const ValueType& value)
-		: Base(value)
-		{
-		}
+		: _isUsed(true)
+		, _value(value)
+		{}
 
 		Optional(ValueType&& value)
-		: Base(std::forward<ValueType>(value))
+		: _isUsed(true)
+		, _value(std::forward<T>(value))
+		{}
+
+		Optional(const Optional& copy)
+		: _isUsed(copy._isUsed)
 		{
+			if (_isUsed)
+			{
+				new (&_value) ValueType(copy._value);
+			}
+		}
+
+		Optional(Optional&& move)
+		: _isUsed(move._isUsed)
+		{
+			move._isUsed = false;
+
+			if (_isUsed)
+			{
+				new (&_value) ValueType(std::forward<ValueType>(move._value));
+			}
 		}
 
 		template<typename... Args>
 		Optional(InPlaceType, Args&& ... args)
-		: Base(InPlace, std::forward<Args>(args)...)
+		: _isUsed(true)
 		{
-		}
-
-		Optional(const Optional& copy)
-		: Base(copy)
-		{
-		}
-
-		Optional(Optional&& move)
-		: Base(std::forward<Base>(move))
-		{
+			new (&_value) ValueType(std::forward<Args>(args)...);
 		}
 
 		~Optional()
 		{
+			if constexpr (!std::is_trivially_destructible_v<T>)
+			{
+				destroy();
+			}
 		}
 
 		Optional& operator=(const Optional& copy)
 		{
 			if (this != &copy)
 			{
-				this->destroy();
+				destroy();
 
-				this->_isUsed = copy._isUsed;
+				_isUsed = copy._isUsed;
 
-				if (this->_isUsed)
+				if (_isUsed)
 				{
-					new (&this->_value) ValueType(copy._value);
+					new (&_value) ValueType(copy._value);
 				}
 			}
 
@@ -217,13 +84,13 @@ namespace Baroque
 
 		Optional& operator=(Optional&& move)
 		{
-			this->destroy();
+			destroy();
 
-			this->_isUsed = move._isUsed;
+			_isUsed = move._isUsed;
 
-			if (this->_isUsed)
+			if (_isUsed)
 			{
-				new (&this->_value) ValueType(std::forward<ValueType>(move._value));
+				new (&_value) ValueType(std::forward<ValueType>(move._value));
 			}
 
 			move._isUsed = false;
@@ -233,20 +100,20 @@ namespace Baroque
 
 		Optional& operator=(const ValueType& value)
 		{
-			this->destroy();
+			destroy();
 
-			new (&this->_value) ValueType(value);
-			this->_isUsed = true;
+			new (&_value) ValueType(value);
+			_isUsed = true;
 
 			return *this;
 		}
 
 		Optional& operator=(ValueType&& value)
 		{
-			this->destroy();
+			destroy();
 
-			new (&this->_value) ValueType(std::forward<ValueType>(value));
-			this->_isUsed = true;
+			new (&_value) ValueType(std::forward<ValueType>(value));
+			_isUsed = true;
 
 			return *this;
 		}
@@ -259,35 +126,59 @@ namespace Baroque
 
 		void Clear()
 		{
-			this->destroy();
+			destroy();
 
-			this->_isUsed = false;
+			_isUsed = false;
 		}
 
 		bool IsValid() const
 		{
-			return this->_isUsed;
+			return _isUsed;
 		}
 
 		template<typename... Args>
 		void Emplace(Args&&... args)
 		{
-			this->destroy();
+			destroy();
 
-			new (&this->_value) ValueType(std::forward<Args>(args)...);
+			new (&_value) ValueType(std::forward<Args>(args)...);
 
-			this->_isUsed = true;
+			_isUsed = true;
 		}
 
 		ValueType& Value()
 		{
-			return this->_value;
+			return _value;
 		}
 
 		const ValueType& Value() const
 		{
-			return this->_value;
+			return _value;
 		}
+
+	private:
+		void destroy()
+		{
+			if constexpr (!std::is_trivially_destructible_v<T>)
+			{
+				if (_isUsed)
+				{
+					_value.~ValueType();
+				}
+			}
+		}
+
+	private:
+		// mlarouche - The union is used to disable the automatic call to a
+		// complex type ctor/dtor. It allows defaut-constructed Optional of
+		// a complex type to be near no-op.
+		union
+		{
+			std::uint8_t _dummy;
+			T _value;
+		};
+
+		bool _isUsed = false;
 	};
 
 	template<typename T>
