@@ -3,7 +3,7 @@
 #include "Core/CoreDefines.h"
 
 #include "Core/Memory/Memory.h"
-#include "Core/TypeTraits.h"
+#include "Core/Utilities/TypeTraits.h"
 
 namespace Baroque
 {

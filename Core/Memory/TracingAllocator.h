@@ -3,7 +3,7 @@
 #include "Core/CoreDefines.h"
 
 #if defined(BAROQUE_TRACE_MEMORY)
-#include "Core/SourceLocation.h"
+#include "Core/Utilities/SourceLocation.h"
 
 namespace Baroque
 {

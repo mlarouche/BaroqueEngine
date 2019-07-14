@@ -1,6 +1,6 @@
 #pragma once
 
-#include "CoreDefines.h"
+#include "Core/CoreDefines.h"
 
 namespace Baroque
 {

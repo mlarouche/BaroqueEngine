@@ -1,10 +1,10 @@
 #include <gtest/gtest.h>
 
-#include "Core/UniquePtr.h"
-#include "TestComplexType.h"
-
 #include "Core/Memory/ObjectAllocator.h"
 #include "Core/Memory/Memory.h"
+#include "Core/Utilities/UniquePtr.h"
+
+#include "TestComplexType.h"
 
 namespace
 {

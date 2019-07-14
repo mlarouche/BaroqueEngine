@@ -2,8 +2,8 @@
 
 #include "Core/CoreDefines.h"
 
-#include "Core/StronglyTypeBase.h"
-#include "Core/TypeTraits.h"
+#include "Core/Utilities/StronglyTypeBase.h"
+#include "Core/Utilities/TypeTraits.h"
 
 namespace Baroque::Unicode
 {

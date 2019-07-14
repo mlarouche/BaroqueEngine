@@ -6,7 +6,7 @@
 #include "Core/Containers/ArrayView.h"
 #include "Core/Containers/ArraySpan.h"
 #include "Core/Memory/Memory.h"
-#include "Core/TypeTraits.h"
+#include "Core/Utilities/TypeTraits.h"
 
 #include <cstdlib>
 

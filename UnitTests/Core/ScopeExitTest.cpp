@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 
-#include "Core/ScopeExit.h"
+#include "Core/Utilities/ScopeExit.h"
 
 TEST(ScopeExit, BasicCase)
 {
