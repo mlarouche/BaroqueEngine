@@ -44,7 +44,7 @@ namespace Baroque
 		class TracingAllocator : private Allocator
 		{
 		public:
-			static constexpr std::size_t ArrayCapacity = Allocator::ArrayCapacity;
+			static constexpr std::size_t StackCapacity = Allocator::StackCapacity;
 
 			void* Allocate(const std::size_t size, const TraceMemoryCategory& category, const Baroque::SourceLocation& sourceLocation)
 			{

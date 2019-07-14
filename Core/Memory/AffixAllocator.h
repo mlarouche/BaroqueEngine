@@ -10,7 +10,7 @@ namespace Baroque
 		class AffixAllocator : private Allocator, private Prefix, private Suffix
 		{
 		public:
-			static constexpr std::size_t ArrayCapacity = Allocator::ArrayCapacity;
+			static constexpr std::size_t StackCapacity = Allocator::StackCapacity;
 
 			void* Allocate(const std::size_t size)
 			{

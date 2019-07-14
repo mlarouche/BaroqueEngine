@@ -52,7 +52,7 @@ namespace Baroque
 	private:
 		static constexpr const auto GrowFactor = 2.0;
 		static constexpr const auto DefaultCapacity = 4;
-		static constexpr const auto InitialCapacity = Allocator::ArrayCapacity / sizeof(T);
+		static constexpr const auto InitialCapacity = Allocator::StackCapacity / sizeof(T);
 
 	public:
 		using Value = T;

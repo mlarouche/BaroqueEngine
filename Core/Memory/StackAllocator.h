@@ -12,7 +12,7 @@ namespace Baroque
 		class StackAllocator
 		{
 		public:
-			static constexpr std::size_t ArrayCapacity = AllocSize;
+			static constexpr std::size_t StackCapacity = AllocSize;
 
 			StackAllocator()
 			: _top(_storage)

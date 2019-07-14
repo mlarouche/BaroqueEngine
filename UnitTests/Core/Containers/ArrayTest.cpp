@@ -2,31 +2,10 @@
 
 #include "Core/Containers/Array.h"
 #include "UnitTests/Core/TestComplexType.h"
+#include "UnitTests/Core/VerifyDeallocAllocator.h"
 
 namespace
 {
-	class VerifyDeallocImpl : public Baroque::Memory::MallocAllocator
-	{
-	public:
-		void* Allocate(const std::size_t size)
-		{
-			return MallocAllocator::Allocate(size);
-		}
-
-		void Deallocate(void* ptr)
-		{
-			LastDeallocation = ptr;
-			MallocAllocator::Deallocate(ptr);
-		}
-
-		static void Reset()
-		{
-			LastDeallocation = nullptr;
-		}
-
-		static void* LastDeallocation;
-	};
-
 	struct Test
 	{
 		int IntValue = 42;
@@ -48,10 +27,6 @@ namespace
 		40,
 		50
 	};
-
-	BAROQUE_DEFINE_ALLOCATOR(VerifyDealloc, VerifyDeallocImpl);
-
-	void* VerifyDeallocImpl::LastDeallocation = nullptr;
 }
 
 TEST(Array, ShouldProperlyInitANullArray)
@@ -1056,11 +1031,14 @@ TEST(Array, Erase)
 
 	array.Add(1);
 	array.Add(2);
+	array.Add(2);
 	array.Add(3);
 	array.Add(2);
 	array.Add(4);
 
 	TestComplexType::Reset();
+
+	std::size_t eraseCount = 0;
 
 	auto it = array.begin();
 	while (it != array.end())
@@ -1068,6 +1046,7 @@ TEST(Array, Erase)
 		if (it->Value == 2)
 		{
 			it = array.Erase(it);
+			++eraseCount;
 		}
 		else
 		{
@@ -1075,9 +1054,11 @@ TEST(Array, Erase)
 		}
 	}
 
-	EXPECT_EQ(TestComplexType::DtorCount, 2);
+	EXPECT_EQ(eraseCount, 3);
+
+	EXPECT_EQ(TestComplexType::DtorCount, 3);
 	EXPECT_EQ(TestComplexType::CopyCtorCount, 0);
-	EXPECT_EQ(TestComplexType::MoveCtorCount, 4);
+	EXPECT_EQ(TestComplexType::MoveCtorCount, 8);
 
 	EXPECT_EQ(array.Size(), 3);
 

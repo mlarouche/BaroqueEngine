@@ -1,36 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?> 
-<AutoVisualizer xmlns="http://schemas.microsoft.com/vstudio/debugger/natvis/2010"> 
-  <Type Name="Baroque::Optional&lt;*&gt;">
-    <DisplayString Condition="_isUsed == true">{_value}</DisplayString>
-    <DisplayString Condition="_isUsed == false">Null</DisplayString>
-    <Expand>
-      <ExpandedItem Condition="_isUsed == true">_value</ExpandedItem>
-    </Expand>
-  </Type>
-  <Type Name="Baroque::UniquePtr&lt;*,*&gt;">
-    <DisplayString Condition="_ptr == 0">Null</DisplayString>
-    <DisplayString>{_ptr}</DisplayString>
-    <Expand>
-      <ExpandedItem Condition="_ptr != 0">_ptr</ExpandedItem>
-    </Expand>
-  </Type>
+<AutoVisualizer xmlns="http://schemas.microsoft.com/vstudio/debugger/natvis/2010">
   <Type Name="Baroque::ArrayImplementation&lt;*,*&gt;">
     <DisplayString>{{ size={_size} }}</DisplayString>
     <Expand>
       <Item Name="[size]" ExcludeView="simple">_size</Item>
+      <Item Name="[capacity]" ExcludeView="capacity">_capacity</Item>
       <ArrayItems>
         <Size>_size</Size>
         <ValuePointer>($T1*)_data</ValuePointer>
       </ArrayItems>
     </Expand>
   </Type>
-  <Type Name="Baroque::FixedArray&lt;*,*&gt;">
-    <DisplayString>{{ size={$T2} }}</DisplayString>
+  <Type Name="Baroque::ArraySpan&lt;*&gt;">
+    <DisplayString>{{ size={_end - _begin} }}</DisplayString>
     <Expand>
-      <Item Name="[size]" ExcludeView="simple">$T2</Item>
+      <Item Name="[size]" ExcludeView="simple">_end - _begin</Item>
       <ArrayItems>
-        <Size>$T2</Size>
-        <ValuePointer>_array</ValuePointer>
+        <Size>_end - _begin</Size>
+        <ValuePointer>_begin</ValuePointer>
       </ArrayItems>
     </Expand>
   </Type>
@@ -44,14 +31,76 @@
       </ArrayItems>
     </Expand>
   </Type>
-  <Type Name="Baroque::ArraySpan&lt;*&gt;">
-    <DisplayString>{{ size={_end - _begin} }}</DisplayString>
+  <Type Name="Baroque::Unicode::CodepointIterator">
+    <DisplayString>{_it,s8}</DisplayString>
+  </Type>
+  <Type Name="Baroque::Unicode::Codepoint">
+    <DisplayString>{Value}</DisplayString>
+  </Type>
+  <Type Name="Baroque::FixedArray&lt;*,*&gt;">
+    <DisplayString>{{ size={$T2} }}</DisplayString>
+    <Expand>
+      <Item Name="[size]" ExcludeView="simple">$T2</Item>
+      <ArrayItems>
+        <Size>$T2</Size>
+        <ValuePointer>_array</ValuePointer>
+      </ArrayItems>
+    </Expand>
+  </Type>
+  <Type Name="Baroque::StringImplementation&lt;*&gt;">
+    <DisplayString Condition="Short.InvertedSize &amp; 0x80">{Heap.Data,s8}</DisplayString>
+    <DisplayString>{Short.Data,s8}</DisplayString>
+    <StringView Condition="Short.InvertedSize &amp; 0x80">Heap.Data,s8</StringView>
+    <StringView>Short.Data,s8</StringView>
+    <Expand>
+      <Item Name="[size]" ExcludeView="simple" Condition="Short.InvertedSize &amp; 0x80">Heap.Size</Item>
+      <Item Name="[capacity]" ExcludeView="simple" Condition="Short.InvertedSize &amp; 0x80">Heap.Capacity &amp; (~0ull >> 1)</Item>
+      <Item Name="[short size]" ExcludeView="simple" Condition="!(Short.InvertedSize &amp; 0x80)">sizeof(Short.Data) - (Short.InvertedSize)</Item>
+      <Item Name="[short capacity]" Condition="!(Short.InvertedSize &amp; 0x80)" ExcludeView="simple">sizeof(Short.Data)</Item>
+      <ArrayItems Condition="Short.InvertedSize &amp; 0x80">
+        <Size>Heap.Size</Size>
+        <ValuePointer>Heap.Data</ValuePointer>
+      </ArrayItems>
+      <ArrayItems Condition="!(Short.InvertedSize &amp; 0x80)">
+        <Size>sizeof(Short.Data) - (Short.InvertedSize)</Size>
+        <ValuePointer>Short.Data</ValuePointer>
+      </ArrayItems>
+    </Expand>
+  </Type>
+  <Type Name="Baroque::StringSpan">
+    <DisplayString>{_begin,[_end - _begin]s8}</DisplayString>
+    <StringView>_begin,[_end - _begin]s8</StringView>
     <Expand>
       <Item Name="[size]" ExcludeView="simple">_end - _begin</Item>
       <ArrayItems>
         <Size>_end - _begin</Size>
         <ValuePointer>_begin</ValuePointer>
       </ArrayItems>
+    </Expand>
+  </Type>
+  <Type Name="Baroque::StringView">
+    <DisplayString>{_begin,[_end - _begin]s8}</DisplayString>
+    <StringView>_begin,[_end - _begin]s8</StringView>
+    <Expand>
+      <Item Name="[size]" ExcludeView="simple">_end - _begin</Item>
+      <ArrayItems>
+        <Size>_end - _begin</Size>
+        <ValuePointer>_begin</ValuePointer>
+      </ArrayItems>
+    </Expand>
+  </Type>
+  <Type Name="Baroque::Optional&lt;*&gt;">
+    <DisplayString Condition="_isUsed == true">{_value}</DisplayString>
+    <DisplayString Condition="_isUsed == false">Null</DisplayString>
+    <Expand>
+      <ExpandedItem Condition="_isUsed == true">_value</ExpandedItem>
+    </Expand>
+  </Type>
+  <Type Name="Baroque::UniquePtr&lt;*,*&gt;">
+    <DisplayString Condition="_ptr == 0">Null</DisplayString>
+    <DisplayString>{_ptr}</DisplayString>
+    <Expand>
+      <ExpandedItem Condition="_ptr != 0">_ptr</ExpandedItem>
     </Expand>
   </Type>
 </AutoVisualizer>
