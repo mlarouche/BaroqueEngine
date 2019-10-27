@@ -1453,7 +1453,8 @@ namespace Baroque
 			}
 
 			std::memcpy(Data(), value, size);
-			setSize(size);		}
+			setSize(size);
+		}
 
 		constexpr void ensureCapacity()
 		{
