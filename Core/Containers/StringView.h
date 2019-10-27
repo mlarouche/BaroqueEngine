@@ -19,6 +19,8 @@ namespace Baroque
 		using ConstPointer = Value const*;
 		using ConstReference = Value const&;
 		using SizeType = std::size_t;
+		using Iterator = ConstPointer;
+		using ConstIterator = ConstPointer;
 
 		constexpr StringView()
 		{}
@@ -400,6 +402,11 @@ namespace Baroque
 			}
 
 			return thisSize;
+		}
+
+		void RemovePrefix(SizeType prefix)
+		{
+			_begin += prefix;
 		}
 
 		constexpr ConstPointer ReverseFind(Value value) const

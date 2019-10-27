@@ -552,9 +552,9 @@ namespace Baroque
 		}
 
 		template<typename...Args>
-		static StringImplementation Join(StringView pattern, StringView first, StringView second, Args... rest)
+		static StringImplementation Join(StringView pattern, StringView first, Args&&... args)
 		{
-			return internalJoin(pattern, first, second, rest...);
+			return StringImplementation(first) + (... + (StringImplementation(pattern) + StringImplementation(std::forward<Args>(args))));
 		}
 
 		constexpr SizeType IndexOf(Value value) const
@@ -1453,8 +1453,7 @@ namespace Baroque
 			}
 
 			std::memcpy(Data(), value, size);
-			setSize(size);
-		}
+			setSize(size);		}
 
 		constexpr void ensureCapacity()
 		{
@@ -1488,17 +1487,6 @@ namespace Baroque
 			{
 				allocator().Deallocate(Heap.Data);
 			}
-		}
-
-		static StringImplementation internalJoin(StringView, StringView input)
-		{
-			return input.ToStringType<StringImplementation>();
-		}
-
-		template<typename... Args>
-		static StringImplementation internalJoin(StringView pattern, StringView first, Args... args)
-		{
-			return internalJoin(pattern, first) + pattern + internalJoin(pattern, args...);
 		}
 
 		void insertCodepoint(Pointer data, Unicode::Codepoint codepoint, SizeType codepointLength)

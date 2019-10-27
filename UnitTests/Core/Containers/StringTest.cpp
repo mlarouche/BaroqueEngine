@@ -2068,7 +2068,7 @@ TEST(String, JoinByArrayView)
 
 	EXPECT_STREQ(result.Data(), "This is an array");
 
-	Baroque::Array<Baroque::String> onlyTwoArray;
+	Baroque::Array<Baroque::StringView> onlyTwoArray;
 	onlyTwoArray.Add("123");
 	onlyTwoArray.Add("456");
 

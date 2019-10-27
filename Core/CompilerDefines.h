@@ -28,3 +28,12 @@
 #else
 #define BAROQUE_UNIQUE_COUNTER __LINE__
 #endif
+
+// FORCE_INLINE
+#if defined(BAROQUE_COMPILER_MSVC)
+#define BAROQUE_FORCE_INLINE __forceinline
+#elif defined(BAROQUE_COMPILER_GCC) || defined(BAROQUE_COMPILER_CLANG)
+#define BAROQUE_FORCE_INLINE __attribute__((always_inline))
+#else
+#define BAROQUE_FORCE_INLINE
+#endif
