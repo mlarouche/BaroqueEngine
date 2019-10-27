@@ -41,6 +41,28 @@ namespace Baroque
 	};
 
 	template<typename Lock>
+	struct AutoTryReadLock
+	{
+		AutoTryReadLock(Lock& lock)
+		: _lock(lock)
+		{
+			_needUnlock = lock.TryLockRead();
+		}
+
+		~AutoTryReadLock()
+		{
+			if (_needUnlock)
+			{
+				_lock.Unlock();
+			}
+		}
+
+	private:
+		bool _needUnlock = false;
+		Lock& _lock;
+	};
+
+	template<typename Lock>
 	struct AutoWriteLock
 	{
 		AutoWriteLock(Lock& lock)
@@ -55,6 +77,28 @@ namespace Baroque
 		}
 
 	private:
+		Lock& _lock;
+	};
+
+	template<typename Lock>
+	struct AutoTryWriteLock
+	{
+		AutoTryWriteLock(Lock& lock)
+		: _lock(lock)
+		{
+			_needUnlock = lock.TryLockWrite();
+		}
+
+		~AutoTryWriteLock()
+		{
+			if (_needUnlock)
+			{
+				_lock.Unlock();
+			}
+		}
+
+	private:
+		bool _needUnlock = false;
 		Lock& _lock;
 	};
 }
