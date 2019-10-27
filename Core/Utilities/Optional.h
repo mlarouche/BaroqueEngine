@@ -15,22 +15,21 @@ namespace Baroque
 	public:
 		using ValueType = T;
 
-		Optional()
-		: _dummy('\0')
+		constexpr Optional()
 		{
 		}
 
-		Optional(const ValueType& value)
+		constexpr Optional(const ValueType& value)
 		: _isUsed(true)
 		, _value(value)
 		{}
 
-		Optional(ValueType&& value)
+		constexpr Optional(ValueType&& value)
 		: _isUsed(true)
 		, _value(std::forward<T>(value))
 		{}
 
-		Optional(const Optional& copy)
+		constexpr Optional(const Optional& copy)
 		: _isUsed(copy._isUsed)
 		{
 			if (_isUsed)
@@ -39,7 +38,7 @@ namespace Baroque
 			}
 		}
 
-		Optional(Optional&& move)
+		constexpr Optional(Optional&& move)
 		: _isUsed(move._isUsed)
 		{
 			move._isUsed = false;
@@ -51,7 +50,7 @@ namespace Baroque
 		}
 
 		template<typename... Args>
-		Optional(InPlaceType, Args&& ... args)
+		constexpr Optional(InPlaceType, Args&& ... args)
 		: _isUsed(true)
 		{
 			new (&_value) ValueType(std::forward<Args>(args)...);
@@ -65,7 +64,7 @@ namespace Baroque
 			}
 		}
 
-		Optional& operator=(const Optional& copy)
+		constexpr Optional& operator=(const Optional& copy)
 		{
 			if (this != &copy)
 			{
@@ -82,7 +81,7 @@ namespace Baroque
 			return *this;
 		}
 
-		Optional& operator=(Optional&& move)
+		constexpr Optional& operator=(Optional&& move)
 		{
 			destroy();
 
@@ -98,7 +97,7 @@ namespace Baroque
 			return *this;
 		}
 
-		Optional& operator=(const ValueType& value)
+		constexpr Optional& operator=(const ValueType& value)
 		{
 			destroy();
 
@@ -108,7 +107,7 @@ namespace Baroque
 			return *this;
 		}
 
-		Optional& operator=(ValueType&& value)
+		constexpr Optional& operator=(ValueType&& value)
 		{
 			destroy();
 
@@ -118,26 +117,26 @@ namespace Baroque
 			return *this;
 		}
 
-		Optional& operator=(std::nullptr_t)
+		constexpr Optional& operator=(std::nullptr_t)
 		{
 			Clear();
 			return *this;
 		}
 
-		void Clear()
+		constexpr void Clear()
 		{
 			destroy();
 
 			_isUsed = false;
 		}
 
-		bool IsValid() const
+		constexpr bool IsValid() const
 		{
 			return _isUsed;
 		}
 
 		template<typename... Args>
-		void Emplace(Args&&... args)
+		constexpr void Emplace(Args&&... args)
 		{
 			destroy();
 
@@ -146,18 +145,53 @@ namespace Baroque
 			_isUsed = true;
 		}
 
-		ValueType& Value()
+		constexpr ValueType& Value()
 		{
 			return _value;
 		}
 
-		const ValueType& Value() const
+		constexpr const ValueType& Value() const
 		{
 			return _value;
+		}
+
+		constexpr ValueType ValueOr(ValueType&& defaultValue) const&
+		{
+			return IsValid() ? _value : std::forward<ValueType>(defaultValue);
+		}
+
+		constexpr ValueType ValueOr(ValueType&& defaultValue) &&
+		{
+			return IsValid() ? std::move(_value) : std::forward<ValueType>(defaultValue);
+		}
+
+		constexpr explicit operator bool() const
+		{
+			return IsValid();
+		}
+
+		constexpr ValueType& operator*()
+		{
+			return _value;
+		}
+
+		constexpr const ValueType& operator*() const
+		{
+			return _value;
+		}
+
+		constexpr ValueType* operator->()
+		{
+			return &_value;
+		}
+
+		constexpr const ValueType* operator->() const
+		{
+			return &_value;
 		}
 
 	private:
-		void destroy()
+		constexpr void destroy()
 		{
 			if constexpr (!std::is_trivially_destructible_v<T>)
 			{
@@ -174,7 +208,6 @@ namespace Baroque
 		// a complex type to be near no-op.
 		union
 		{
-			std::uint8_t _dummy;
 			T _value;
 		};
 
@@ -182,7 +215,7 @@ namespace Baroque
 	};
 
 	template<typename T>
-	inline bool operator==(const Optional<T>& left, const Optional<T>& right)
+	constexpr inline bool operator==(const Optional<T>& left, const Optional<T>& right)
 	{
 		if (left.IsValid() == right.IsValid())
 		{
@@ -198,13 +231,13 @@ namespace Baroque
 	}
 
 	template<typename T>
-	inline bool operator!=(const Optional<T>& left, const Optional<T>& right)
+	constexpr inline bool operator!=(const Optional<T>& left, const Optional<T>& right)
 	{
 		return !operator==(left, right);
 	}
 
 	template<typename T>
-	inline bool operator<(const Optional<T>& left, const Optional<T>& right)
+	constexpr inline bool operator<(const Optional<T>& left, const Optional<T>& right)
 	{
 		if (left.IsValid() == right.IsValid())
 		{
@@ -220,7 +253,7 @@ namespace Baroque
 	}
 
 	template<typename T>
-	inline bool operator>(const Optional<T>& left, const Optional<T>& right)
+	constexpr inline bool operator>(const Optional<T>& left, const Optional<T>& right)
 	{
 		if (left.IsValid() == right.IsValid())
 		{
@@ -236,7 +269,7 @@ namespace Baroque
 	}
 
 	template<typename T>
-	inline bool operator<=(const Optional<T>& left, const Optional<T>& right)
+	constexpr inline bool operator<=(const Optional<T>& left, const Optional<T>& right)
 	{
 		if (left.IsValid() == right.IsValid())
 		{
@@ -252,7 +285,7 @@ namespace Baroque
 	}
 
 	template<typename T>
-	inline bool operator>=(const Optional<T>& left, const Optional<T>& right)
+	constexpr inline bool operator>=(const Optional<T>& left, const Optional<T>& right)
 	{
 		if (left.IsValid() == right.IsValid())
 		{

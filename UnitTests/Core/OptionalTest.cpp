@@ -460,3 +460,41 @@ TEST(Optional, OperatorGreaterEqualsShouldWork)
 
 	EXPECT_FALSE(valid >= differentValid);
 }
+
+TEST(Optional, OperatorBool)
+{
+	Baroque::Optional<int> optional;
+
+	EXPECT_FALSE(optional);
+
+	optional.Emplace(42);
+
+	EXPECT_TRUE(optional);
+}
+
+TEST(Optional, PointerDereferenceOperator)
+{
+	Baroque::Optional<int> optional(666);
+
+	EXPECT_EQ(*optional, 666);
+}
+
+TEST(Optional, PointerAcessOperator)
+{
+	Baroque::Optional<TestComplexType> optional(Baroque::InPlace);
+
+	optional->Value = 1024;
+
+	EXPECT_EQ(optional.Value().Value, 1024);
+}
+
+TEST(Optional, ValueOr)
+{
+	Baroque::Optional<int> optional;
+
+	EXPECT_EQ(optional.ValueOr(64), 64);
+
+	optional = 666;
+
+	EXPECT_EQ(optional.ValueOr(64), 666);
+}
